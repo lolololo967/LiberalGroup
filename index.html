@@ -122,6 +122,27 @@
         
         let isAdmin = false;
 
+        // Функции для кодирования/декодирования в Base64
+        function encodeToBase64(str) {
+            try {
+                // Кодируем в Base64 для безопасной передачи
+                return btoa(unescape(encodeURIComponent(str)));
+            } catch (e) {
+                console.error('Ошибка кодирования:', e);
+                return str;
+            }
+        }
+
+        function decodeFromBase64(str) {
+            try {
+                // Декодируем из Base64
+                return decodeURIComponent(escape(atob(str)));
+            } catch (e) {
+                console.error('Ошибка декодирования:', e);
+                return str;
+            }
+        }
+
         // Функция для показа статуса
         function showStatus(message, type = 'info') {
             const statusElement = document.getElementById('statusMessage');
@@ -149,21 +170,24 @@
                     throw new Error('Ошибка загрузки: ' + error.message);
                 }
 
-                if (data) {
+                if (data && data.length > 0) {
                     data.forEach(item => {
                         const elements = document.querySelectorAll(`[data-content-key="${item.content_key}"]`);
                         elements.forEach(element => {
-                            // Декодируем обратно из URL-encoded формата
                             try {
-                                const decodedValue = decodeURIComponent(item.content_value);
+                                // Декодируем из Base64
+                                const decodedValue = decodeFromBase64(item.content_value);
                                 element.textContent = decodedValue;
                             } catch (e) {
                                 // Если ошибка декодирования, используем оригинальное значение
+                                console.warn('Ошибка декодирования для ключа:', item.content_key);
                                 element.textContent = item.content_value;
                             }
                         });
                     });
                     showStatus('Контент загружен', 'success');
+                } else {
+                    showStatus('Контент не найден', 'error');
                 }
             } catch (error) {
                 console.error('Ошибка:', error);
@@ -171,20 +195,19 @@
             }
         }
 
-        // Сохранение одного элемента контента (ИСПРАВЛЕННАЯ ВЕРСИЯ)
+        // Сохранение одного элемента контента (ИСПРАВЛЕННАЯ ВЕРСИЯ с Base64)
         async function saveContent(key, value) {
             try {
-                // Кодируем специальные символы для избежания ошибок кодировки
-                const encodedValue = encodeURIComponent(value);
-                const encodedKey = encodeURIComponent(key);
-                
                 console.log('Сохранение:', key, '->', value);
-                console.log('Закодировано:', encodedKey, '->', encodedValue);
+                
+                // Кодируем значение в Base64 для безопасной передачи
+                const encodedValue = encodeToBase64(value);
+                console.log('Закодировано в Base64:', encodedValue);
                 
                 const { error } = await supabase
                     .from('site_content')
                     .upsert({ 
-                        content_key: encodedKey, 
+                        content_key: key, 
                         content_value: encodedValue 
                     }, {
                         onConflict: 'content_key'
@@ -221,7 +244,6 @@
 
                 showStatus(`Успешно опубликовано ${savedCount} элементов!`, 'success');
                 
-                // Обновляем контент для всех пользователей через real-time
                 setTimeout(() => {
                     if (isAdmin) {
                         showStatus('Режим редактирования активен');
@@ -356,7 +378,7 @@
                         if (!isAdmin) {
                             const newData = payload.new;
                             try {
-                                const decodedValue = decodeURIComponent(newData.content_value);
+                                const decodedValue = decodeFromBase64(newData.content_value);
                                 const elements = document.querySelectorAll(`[data-content-key="${newData.content_key}"]`);
                                 elements.forEach(element => {
                                     element.textContent = decodedValue;
