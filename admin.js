@@ -1,11 +1,10 @@
-  // ⚠️ ЗАМЕНИТЕ НА ВАШИ РЕАЛЬНЫЕ ЗНАЧЕНИЯ!
+
         const SUPABASE_URL = 'https://pwawgeyxzjntystktciz.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3YXdnZXl4empudHlzdGt0Y2l6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzMjU2NTQsImV4cCI6MjA3NDkwMTY1NH0.nS4TpZT7hq1PW4lLUiDccUmJSobnXWm1GFTWskYy8jI';
 
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let isAdmin = false;
 
-// Функция для показа статуса
 function showStatus(message, type = 'info') {
     const statusElement = document.getElementById('statusMessage');
     if (statusElement) {
@@ -14,7 +13,7 @@ function showStatus(message, type = 'info') {
     }
 }
 
-// Функция для показа сообщения входа
+
 function showLoginMessage(message, type = 'error') {
     const messageElement = document.getElementById('loginMessage');
     if (messageElement) {
@@ -23,7 +22,7 @@ function showLoginMessage(message, type = 'error') {
     }
 }
 
-// Загрузка контента
+
 async function loadContent() {
     try {
         showStatus('Загрузка контента...');
@@ -53,7 +52,7 @@ async function loadContent() {
     }
 }
 
-// Сохранение контента
+
 async function saveContent(key, value) {
     try {
         const { error } = await supabase
@@ -76,7 +75,7 @@ async function saveContent(key, value) {
     }
 }
 
-// Публикация изменений
+
 async function publishChanges() {
     try {
         showStatus('Публикация изменений...');
@@ -106,7 +105,6 @@ async function publishChanges() {
     }
 }
 
-// Проверка пароля
 async function checkPassword(password) {
     try {
         const encoder = new TextEncoder();
@@ -124,9 +122,9 @@ async function checkPassword(password) {
     }
 }
 
-// Включение/выключение режима редактирования
+
 function toggleEditMode(enable) {
-    // Находим ВСЕ элементы с data-content-key
+
     const elements = document.querySelectorAll('[data-content-key]');
     
     console.log(`Найдено ${elements.length} элементов для редактирования`);
@@ -135,24 +133,22 @@ function toggleEditMode(enable) {
         element.contentEditable = enable;
         if (enable) {
             element.classList.add('admins-editable');
-            // Добавляем стили для кнопок
+
             if (element.tagName === 'BUTTON') {
-                element.style.border = '1px dashed #007bff';
-                element.style.background = '#f8f9fa';
+
             }
         } else {
             element.classList.remove('admins-editable');
-            // Убираем стили с кнопок
+
             if (element.tagName === 'BUTTON') {
                 element.style.border = '';
-                element.style.background = '';
             }
         }
     });
     
     if (enable) {
         document.getElementById('adminPanel').classList.remove('admins-hidden');
-        // Скрываем все кнопки входа для админов
+
         const adminLoginBtns = document.querySelectorAll('#adminLoginBtn');
         adminLoginBtns.forEach(btn => {
             btn.style.display = 'none';
@@ -160,7 +156,7 @@ function toggleEditMode(enable) {
         showStatus('Режим редактирования активен', 'info');
     } else {
         document.getElementById('adminPanel').classList.add('admins-hidden');
-        // Показываем все кнопки входа для админов
+
         const adminLoginBtns = document.querySelectorAll('#adminLoginBtn');
         adminLoginBtns.forEach(btn => {
             btn.style.display = 'block';
@@ -169,14 +165,14 @@ function toggleEditMode(enable) {
     }
 }
 
-// Инициализация при загрузке страницы
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Админ панель загружена. Supabase URL:', SUPABASE_URL);
     
-    // Загружаем контент при старте
+
     loadContent();
     
-    // Проверяем, существуют ли элементы перед добавлением обработчиков
+
     const adminLoginBtn = document.getElementById('adminLoginBtn');
     const loginBtn = document.getElementById('loginBtn');
     const cancelBtn = document.getElementById('cancelBtn');
@@ -188,7 +184,6 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
-    // Обработчики событий входа
     adminLoginBtn.addEventListener('click', function() {
         console.log('Кнопка входа нажата');
         document.getElementById('loginModal').classList.remove('admins-hidden');
@@ -236,7 +231,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Обработчики публикации и выхода
     if (publishBtn) {
         publishBtn.addEventListener('click', publishChanges);
     }
@@ -249,7 +243,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Дополнительные обработчики
     const passwordInput = document.getElementById('passwordInput');
     if (passwordInput) {
         passwordInput.addEventListener('keypress', function(e) {
@@ -268,7 +261,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    // Real-time подписка на изменения
     supabase
         .channel('public:site_content')
         .on('postgres_changes', 
