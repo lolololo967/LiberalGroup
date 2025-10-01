@@ -40,68 +40,66 @@
   <button id="publishBtn">Опубликовать изменения</button>
 </div>
 
-<!-- Подключаем Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.27.0/dist/supabase.min.js"></script>
 <script>
-  // создаём отдельную переменную, чтобы не конфликтовать с глобальным supabase
-  const supabaseClient = supabase.createClient(
-    "https://pwawgeyxzjntystktciz.supabase.co",
-    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3YXdnZXl4empudHlzdGt0Y2l6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzMjU2NTQsImV4cCI6MjA3NDkwMTY1NH0.nS4TpZT7hq1PW4lLUiDccUmJSobnXWm1GFTWskYy8jI"
-  );
+  // Создаём клиент **только после того, как CDN загрузился**
+  window.addEventListener('DOMContentLoaded', () => {
+    const supabaseClient = supabase.createClient(
+      "ВАШ_SUPABASE_URL",
+      "ВАШ_SUPABASE_ANON_KEY"
+    );
 
-  let currentUser = null;
+    // Остальной код, который использует supabaseClient
+    let currentUser = null;
 
-  async function loadContent() {
-    const { data, error } = await supabaseClient.from("content").select("*");
-    if(error) return console.error(error);
-    data.forEach(item => {
-      const el = document.querySelector(`[data-key="${item.key}"]`);
-      if(el) el.innerText = item.published_text || "";
-    });
-  }
-
-  loadContent();
-
-  // Вход для админов
-  document.getElementById("adminLogin").addEventListener("click", async () => {
-    const email = prompt("Введите email администратора");
-    const password = prompt("Введите пароль");
-    if(!email || !password) return alert("Email и пароль обязательны");
-
-    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-    if(error) return alert("Ошибка входа: " + error.message);
-
-    currentUser = data.user;
-    alert("Вход выполнен!");
-    document.getElementById("adminPanel").style.display = "block";
-    loadDrafts();
-  });
-
-  async function loadDrafts() {
-    const { data, error } = await supabaseClient.from("content").select("*");
-    if(error) return console.error(error);
-
-    const container = document.getElementById("texts");
-    container.innerHTML = "";
-    data.forEach(item => {
-      const div = document.createElement("div");
-      div.innerHTML = `<strong>${item.key}</strong>: <input data-key="${item.key}" value="${item.draft_text||item.published_text||''}">`;
-      container.appendChild(div);
-    });
-  }
-
-  // Публикуем изменения
-  document.getElementById("publishBtn").addEventListener("click", async () => {
-    const inputs = document.querySelectorAll("#texts input");
-    for(const input of inputs){
-      const key = input.dataset.key;
-      const value = input.value;
-      await supabaseClient.from("content").upsert({ key, draft_text: value, last_edited_by: currentUser.id });
+    async function loadContent() {
+      const { data, error } = await supabaseClient.from("content").select("*");
+      if(error) { console.error(error); return; }
+      data.forEach(item => {
+        const el = document.querySelector(`[data-key="${item.key}"]`);
+        if(el) el.innerText = item.published_text || "";
+      });
     }
-    alert("Все изменения опубликованы!");
+
     loadContent();
+
+    document.getElementById("adminLogin").addEventListener("click", async () => {
+      const email = prompt("Email");
+      const password = prompt("Пароль");
+      if(!email || !password) return alert("Обязательно email и пароль");
+
+      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+      if(error) return alert(error.message);
+
+      currentUser = data.user;
+      document.getElementById("adminPanel").style.display = "block";
+      loadDrafts();
+    });
+
+    async function loadDrafts() {
+      const { data, error } = await supabaseClient.from("content").select("*");
+      if(error) return console.error(error);
+
+      const container = document.getElementById("texts");
+      container.innerHTML = "";
+      data.forEach(item => {
+        const div = document.createElement("div");
+        div.innerHTML = `<strong>${item.key}</strong>: <input data-key="${item.key}" value="${item.draft_text||item.published_text||''}">`;
+        container.appendChild(div);
+      });
+    }
+
+    document.getElementById("publishBtn").addEventListener("click", async () => {
+      const inputs = document.querySelectorAll("#texts input");
+      for(const input of inputs){
+        await supabaseClient.from("content").upsert({ key: input.dataset.key, draft_text: input.value, last_edited_by: currentUser.id });
+      }
+      alert("Все изменения опубликованы!");
+      loadContent();
+    });
   });
 </script>
+
 
 </body>
 </html>
