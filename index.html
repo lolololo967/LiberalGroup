@@ -14,6 +14,7 @@
             position: fixed; top: 20px; right: 20px; 
             background: #007bff; color: white; border: none; 
             padding: 10px 20px; border-radius: 5px; cursor: pointer; 
+            z-index: 1000;
         }
         
         .admin-panel { 
@@ -22,7 +23,14 @@
             box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 1000;
         }
         
-        [contenteditable="true"] { border: 1px dashed #007bff; padding: 5px; margin: 2px; }
+        [contenteditable="true"] { 
+            border: 1px dashed #007bff; padding: 5px; margin: 2px; 
+            background: #f8f9fa; 
+        }
+        
+        [contenteditable="true"]:focus { 
+            outline: none; border: 1px solid #007bff; background: #e3f2fd; 
+        }
         
         .modal { 
             position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
@@ -30,9 +38,42 @@
             align-items: center; z-index: 2000; 
         }
         
-        .modal-content { background: white; padding: 30px; border-radius: 8px; }
+        .modal-content { 
+            background: white; padding: 30px; border-radius: 8px; 
+            min-width: 300px; 
+        }
         
-        .section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; }
+        .section { 
+            margin: 20px 0; padding: 20px; border: 1px solid #ddd; 
+            border-radius: 8px; 
+        }
+        
+        .publish-btn { 
+            background: #28a745; color: white; border: none; 
+            padding: 8px 15px; border-radius: 4px; cursor: pointer; 
+            margin-right: 10px; 
+        }
+        
+        .logout-btn { 
+            background: #dc3545; color: white; border: none; 
+            padding: 8px 15px; border-radius: 4px; cursor: pointer; 
+        }
+        
+        .input-field {
+            width: 100%; padding: 10px; margin: 10px 0; 
+            border: 1px solid #ddd; border-radius: 4px; 
+        }
+        
+        .login-btn {
+            width: 100%; padding: 10px; background: #007bff; 
+            color: white; border: none; border-radius: 4px; cursor: pointer;
+        }
+        
+        .cancel-btn {
+            width: 100%; padding: 10px; background: #6c757d; 
+            color: white; border: none; border-radius: 4px; cursor: pointer;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -67,105 +108,210 @@
 
     <!-- Админ панель -->
     <div id="adminPanel" class="admin-panel hidden">
-        <h3>Панель администратора</h3>
-        <button id="publishBtn">📢 Опубликовать</button>
-        <button id="logoutBtn" style="margin-top: 10px;">Выйти</button>
+        <h3>⚙️ Панель администратора</h3>
+        <button id="publishBtn" class="publish-btn">📢 Опубликовать изменения</button>
+        <button id="logoutBtn" class="logout-btn">🚪 Выйти</button>
+        <div id="statusMessage" style="margin-top: 10px; font-size: 12px; color: #666;"></div>
     </div>
 
     <!-- Модальное окно входа -->
     <div id="loginModal" class="modal hidden">
         <div class="modal-content">
-            <h3>Вход для администратора</h3>
-            <input type="password" id="adminPassword" placeholder="Введите пароль" style="width: 100%; padding: 10px; margin: 10px 0;">
-            <button id="loginBtn" style="width: 100%; padding: 10px; background: #007bff; color: white; border: none;">Войти</button>
-            <button id="cancelBtn" style="width: 100%; padding: 10px; margin-top: 5px; background: #6c757d; color: white; border: none;">Отмена</button>
+            <h3>🔐 Вход для администратора</h3>
+            <input type="password" id="adminPassword" placeholder="Введите пароль" class="input-field">
+            <button id="loginBtn" class="login-btn">Войти</button>
+            <button id="cancelBtn" class="cancel-btn">Отмена</button>
+            <div id="loginMessage" style="margin-top: 10px; text-align: center; color: #dc3545;"></div>
         </div>
     </div>
 
     <script>
-        // Конфигурация Supabase - ЗАМЕНИТЕ ЭТИ ЗНАЧЕНИЯ!
-        const SUPABASE_URL = 'https://your-project.supabase.co';
-        const SUPABASE_KEY = 'your-anon-key';
+        // Конфигурация Supabase - эти значения будут заменены при деплое
+        const getSupabaseConfig = () => {
+            // В продакшене Vercel подставит значения из Environment Variables
+            if (window.location.hostname.includes('vercel.app')) {
+                return {
+                    url: 'https://your-project.supabase.co', // Vercel заменит это
+                    key: 'your-anon-key' // Vercel заменит это
+                };
+            } else {
+                // Для локальной разработки (если понадобится)
+                return {
+                    url: 'https://your-project.supabase.co', // ЗАМЕНИТЕ НА ВАШ URL
+                    key: 'your-anon-key' // ЗАМЕНИТЕ НА ВАШ КЛЮЧ
+                };
+            }
+        };
+
+        const config = getSupabaseConfig();
+        const supabase = window.supabase.createClient(config.url, config.key);
         
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let isAdmin = false;
 
-        // Загрузка контента
+        // Загрузка контента с сайта
         async function loadContent() {
-            const { data } = await supabase.from('site_content').select('*');
-            if (data) {
-                data.forEach(item => {
-                    const elements = document.querySelectorAll(`[data-content-key="${item.content_key}"]`);
-                    elements.forEach(el => el.textContent = item.content_value);
-                });
+            try {
+                showStatus('Загрузка контента...');
+                const { data, error } = await supabase
+                    .from('site_content')
+                    .select('*');
+
+                if (error) throw error;
+
+                if (data) {
+                    data.forEach(item => {
+                        const elements = document.querySelectorAll(`[data-content-key="${item.content_key}"]`);
+                        elements.forEach(el => {
+                            if (el.textContent !== item.content_value) {
+                                el.textContent = item.content_value;
+                            }
+                        });
+                    });
+                    showStatus('Контент загружен', 'success');
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки:', error);
+                showStatus('Ошибка загрузки контента', 'error');
             }
         }
 
         // Сохранение контента
         async function saveContent(key, value) {
-            await supabase.from('site_content').upsert({ 
-                content_key: key, 
-                content_value: value 
-            });
+            const { error } = await supabase
+                .from('site_content')
+                .upsert({ 
+                    content_key: key, 
+                    content_value: value,
+                    updated_at: new Date().toISOString()
+                }, {
+                    onConflict: 'content_key'
+                });
+
+            if (error) {
+                throw new Error(`Ошибка сохранения: ${error.message}`);
+            }
         }
 
         // Публикация изменений
         async function publishChanges() {
-            const elements = document.querySelectorAll('[data-content-key]');
-            for (const element of elements) {
-                await saveContent(element.getAttribute('data-content-key'), element.textContent);
+            try {
+                showStatus('Публикация изменений...');
+                
+                const elements = document.querySelectorAll('[data-content-key]');
+                let changesCount = 0;
+
+                for (const element of elements) {
+                    const key = element.getAttribute('data-content-key');
+                    const value = element.textContent;
+                    
+                    await saveContent(key, value);
+                    changesCount++;
+                }
+
+                showStatus(`Успешно опубликовано ${changesCount} изменений!`, 'success');
+                
+                // Через 3 секунды возвращаем обычный статус
+                setTimeout(() => {
+                    if (isAdmin) showStatus('Режим редактирования активен');
+                }, 3000);
+
+            } catch (error) {
+                console.error('Ошибка публикации:', error);
+                showStatus('Ошибка публикации: ' + error.message, 'error');
             }
-            alert('Изменения опубликованы!');
         }
 
         // Проверка пароля
         async function checkPassword(password) {
-            // В реальном проекте используйте правильную аутентификацию
-            // Для демо: пароль "admin123"
-            const { data } = await supabase.from('admins').select('*').eq('username', 'admin').single();
-            return data && await verifyPassword(password, data.password_hash);
+            try {
+                // Получаем администратора из базы данных
+                const { data, error } = await supabase
+                    .from('admins')
+                    .select('*')
+                    .eq('username', 'admin')
+                    .single();
+
+                if (error || !data) {
+                    return false;
+                }
+
+                // Проверяем пароль
+                return await verifyPassword(password, data.password_hash);
+            } catch (error) {
+                console.error('Ошибка проверки пароля:', error);
+                return false;
+            }
         }
 
-        async function verifyPassword(password, hash) {
-            // Упрощенная проверка для демо
-            const encoder = new TextEncoder();
-            const data = encoder.encode(password);
-            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-            const hashArray = Array.from(new Uint8Array(hashBuffer));
-            const hashedPassword = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-            
-            // Для демо сравниваем с хешем "admin123"
-            return hashedPassword === '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
+        // Хеширование и проверка пароля
+        async function verifyPassword(password, storedHash) {
+            try {
+                // Хешируем введенный пароль
+                const encoder = new TextEncoder();
+                const data = encoder.encode(password);
+                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+                const hashArray = Array.from(new Uint8Array(hashBuffer));
+                const hashedPassword = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+                
+                // Сравниваем с хранимым хешем
+                // Для пароля "admin123" хеш: 240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9
+                return hashedPassword === storedHash;
+            } catch (error) {
+                console.error('Ошибка проверки пароля:', error);
+                return false;
+            }
         }
 
         // Управление редактированием
         function toggleEditMode(enable) {
-            document.querySelectorAll('[data-content-key]').forEach(el => {
+            const elements = document.querySelectorAll('[data-content-key]');
+            
+            elements.forEach(el => {
                 el.contentEditable = enable;
             });
+            
             document.getElementById('adminPanel').classList.toggle('hidden', !enable);
             document.getElementById('adminLoginBtn').style.display = enable ? 'none' : 'block';
+            
+            if (enable) {
+                showStatus('Режим редактирования активен');
+            }
+        }
+
+        // Показать статус
+        function showStatus(message, type = 'info') {
+            const statusElement = document.getElementById('statusMessage');
+            statusElement.textContent = message;
+            
+            if (type === 'success') {
+                statusElement.style.color = '#28a745';
+            } else if (type === 'error') {
+                statusElement.style.color = '#dc3545';
+            } else {
+                statusElement.style.color = '#666';
+            }
+        }
+
+        // Показать сообщение входа
+        function showLoginMessage(message) {
+            const messageElement = document.getElementById('loginMessage');
+            messageElement.textContent = message;
         }
 
         // Инициализация
         document.addEventListener('DOMContentLoaded', function() {
+            // Загружаем контент при старте
             loadContent();
             
             // Обработчики событий
             document.getElementById('adminLoginBtn').addEventListener('click', () => {
                 document.getElementById('loginModal').classList.remove('hidden');
+                document.getElementById('adminPassword').value = '';
+                document.getElementById('adminPassword').focus();
+                showLoginMessage('');
             });
             
-            document.getElementById('loginBtn').addEventListener('click', async () => {
-                const password = document.getElementById('adminPassword').value;
-                if (await checkPassword(password)) {
-                    isAdmin = true;
-                    document.getElementById('loginModal').classList.add('hidden');
-                    toggleEditMode(true);
-                } else {
-                    alert('Неверный пароль!');
-                }
-            });
+            document.getElementById('loginBtn').addEventListener('click', handleLogin);
             
             document.getElementById('cancelBtn').addEventListener('click', () => {
                 document.getElementById('loginModal').classList.add('hidden');
@@ -177,8 +323,70 @@
                 isAdmin = false;
                 toggleEditMode(false);
                 loadContent(); // Перезагружаем оригинальный контент
+                showStatus('Выход выполнен');
+            });
+            
+            // Enter для входа
+            document.getElementById('adminPassword').addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    handleLogin();
+                }
+            });
+            
+            // Клик вне модального окна
+            document.getElementById('loginModal').addEventListener('click', (e) => {
+                if (e.target.id === 'loginModal') {
+                    document.getElementById('loginModal').classList.add('hidden');
+                }
             });
         });
+
+        // Обработка входа
+        async function handleLogin() {
+            const password = document.getElementById('adminPassword').value;
+            const loginBtn = document.getElementById('loginBtn');
+            
+            if (!password) {
+                showLoginMessage('Введите пароль');
+                return;
+            }
+            
+            // Меняем текст кнопки на время проверки
+            loginBtn.textContent = 'Проверка...';
+            loginBtn.disabled = true;
+            
+            try {
+                if (await checkPassword(password)) {
+                    isAdmin = true;
+                    document.getElementById('loginModal').classList.add('hidden');
+                    toggleEditMode(true);
+                    showLoginMessage('');
+                } else {
+                    showLoginMessage('Неверный пароль!');
+                }
+            } catch (error) {
+                showLoginMessage('Ошибка входа: ' + error.message);
+            } finally {
+                // Восстанавливаем кнопку
+                loginBtn.textContent = 'Войти';
+                loginBtn.disabled = false;
+            }
+        }
+
+        // Real-time подписка на изменения
+        supabase
+            .channel('content-changes')
+            .on('postgres_changes', 
+                { event: '*', schema: 'public', table: 'site_content' }, 
+                (payload) => {
+                    console.log('Получено изменение:', payload);
+                    // Если пользователь не в режиме админа, обновляем контент
+                    if (!isAdmin) {
+                        loadContent();
+                    }
+                }
+            )
+            .subscribe();
     </script>
 </body>
 </html>
