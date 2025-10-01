@@ -1,10 +1,15 @@
 {
-  "name": "my-admin-website",
-  "version": "1.0.0",
-  "description": "Website with admin panel",
-  "main": "index.html",
-  "scripts": {
-    "dev": "echo 'No dev server'",
-    "build": "echo 'No build process'"
-  }
+  "version": 2,
+  "builds": [
+    {
+      "src": "package.json",
+      "use": "@vercel/static"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/$1"
+    }
+  ]
 }
