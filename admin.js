@@ -105,18 +105,27 @@ async function publishChanges() {
     }
 }
 
-// Временная функция проверки пароля
 async function checkPassword(password) {
     try {
-        console.log('Проверка пароля:', password);
+        const response = await fetch('/api/auth', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ password: password.trim() })
+        });
+
+        const result = await response.json();
         
-        // Простая проверка без базы данных
-        const result = password === 'YanPidorasYaEbalEgoMamashu';
-        console.log('Результат проверки:', result);
+        if (!response.ok) {
+            // Если сервер вернул ошибку
+            throw new Error(result.error || 'Auth failed');
+        }
         
-        return result;
+        return result.success;
     } catch (error) {
-        console.error('Ошибка:', error);
+        console.error('Auth error:', error);
+        showLoginMessage('Ошибка соединения с сервером', 'error');
         return false;
     }
 }
@@ -192,35 +201,41 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     if (loginBtn) {
-        loginBtn.addEventListener('click', async function() {
-            const password = document.getElementById('passwordInput').value;
+    loginBtn.addEventListener('click', async function() {
+        const password = document.getElementById('passwordInput').value;
+        
+        if (!password) {
+            showLoginMessage('Введите пароль', 'error');
+            return;
+        }
+        
+        loginBtn.textContent = 'Проверка...';
+        loginBtn.disabled = true;
+        
+        try {
+            const isValid = await checkPassword(password);
             
-            if (!password) {
-                showLoginMessage('Введите пароль', 'error');
-                return;
+            if (isValid) {
+                isAdmin = true;
+                document.getElementById('loginModal').classList.add('admins-hidden');
+                toggleEditMode(true);
+                showLoginMessage('');
+                console.log('Успешный вход в админ-панель');
+            } else {
+                showLoginMessage('Неверный пароль', 'error');
+                // Не очищаем поле, чтобы пользователь мог исправить
+                document.getElementById('passwordInput').focus();
+                document.getElementById('passwordInput').select();
             }
-            
-            loginBtn.textContent = 'Проверка...';
-            loginBtn.disabled = true;
-            
-            try {
-                if (await checkPassword(password)) {
-                    isAdmin = true;
-                    document.getElementById('loginModal').classList.add('admins-hidden');
-                    toggleEditMode(true);
-                    showLoginMessage('');
-                } else {
-                    document.getElementById('loginModal').classList.add('admins-hidden');
-                }
-            } catch (error) {
-                showLoginMessage('Ошибка соединения', 'error');
-            } finally {
-                loginBtn.textContent = 'Войти';
-                loginBtn.disabled = false;
-                document.getElementById('passwordInput').value = '';
-            }
-        });
-    }
+        } catch (error) {
+            console.error('Ошибка при проверке пароля:', error);
+            showLoginMessage('Ошибка соединения: ' + error.message, 'error');
+        } finally {
+            loginBtn.textContent = 'Войти';
+            loginBtn.disabled = false;
+        }
+    });
+}
 
     if (cancelBtn) {
         cancelBtn.addEventListener('click', function() {
