@@ -168,22 +168,55 @@
         }
 
         // Проверка пароля
-        async function checkPassword(password) {
-            try {
-                const encoder = new TextEncoder();
-                const data = encoder.encode(password);
-                const hashBuffer = await crypto.subtle.digest('SHA-256', data);
-                const hashArray = Array.from(new Uint8Array(hashBuffer));
-                const hashedPassword = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
-                
-                const correctHash = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
-                
-                return hashedPassword === correctHash;
-            } catch (error) {
-                console.error('Ошибка проверки пароля:', error);
-                return false;
-            }
+        // Проверка пароля (без вывода сообщения о неправильном пароле)
+async function checkPassword(password) {
+    try {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(password);
+        const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+        const hashArray = Array.from(new Uint8Array(hashBuffer));
+        const hashedPassword = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        
+        const correctHash = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
+        
+        return hashedPassword === correctHash;
+    } catch (error) {
+        console.error('Ошибка проверки пароля:', error);
+        return false;
+    }
+}
+
+// Обработчик входа (без сообщения о неправильном пароле)
+document.getElementById('loginBtn').addEventListener('click', async function() {
+    const password = document.getElementById('passwordInput').value;
+    const loginBtn = document.getElementById('loginBtn');
+    
+    if (!password) {
+        showLoginMessage('Введите пароль');
+        return;
+    }
+    
+    loginBtn.textContent = 'Проверка...';
+    loginBtn.disabled = true;
+    
+    try {
+        if (await checkPassword(password)) {
+            isAdmin = true;
+            document.getElementById('loginModal').classList.add('hidden');
+            toggleEditMode(true);
+            showLoginMessage('');
+        } else {
+            // Просто закрываем модальное окно без сообщения об ошибке
+            document.getElementById('loginModal').classList.add('hidden');
         }
+    } catch (error) {
+        showLoginMessage('Ошибка соединения');
+    } finally {
+        loginBtn.textContent = 'Войти';
+        loginBtn.disabled = false;
+        document.getElementById('passwordInput').value = ''; // Очищаем поле
+    }
+});
 
         // Включение/выключение режима редактирования
         function toggleEditMode(enable) {
