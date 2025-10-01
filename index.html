@@ -81,7 +81,7 @@
                 <h2 class="modal-title title-role" data-content-key="game_roles_title">Игровые роли</h2>
                 <div class="game-roles-buttons">
                     <button data-role="Hearts Of Iron 4" data-content-key="hoi4_btn">Hearts Of Iron 4</button>
-                    <button data-role="StandOff 2" data-content-key="standoff2_btn">StandOff 2</button>ыы
+                    <button data-role="StandOff 2" data-content-key="standoff2_btn">StandOff 2</button>
                     <button data-role="CS 2" data-content-key="cs2_btn">Сounter Strike 2</button>
                     <button data-role="SCP: Secret Laboratory" data-content-key="scp:sl_btn">SCP: Secret Laboratory</button>
                     <button data-role="Deceit" data-content-key="Deceit_btn">Deceit</button>
@@ -1074,7 +1074,6 @@
         <div class="modal" data-modal="Тесты">
             <h2 class="modal-title">Тесты</h2>
             <div class="modal-underline"></div>
-            <button id="adminLoginBtn" class="admins-admin-btn">🔐 Вход для админов</button>
         </div>
 
         <div class="modal" data-modal="Проекты">
@@ -1084,8 +1083,9 @@
             <h2 class="modal-title">Партии</h2>
         </div>
     
-        <div class="modal" data-modal="Разработчики">
+        <div class="modal modal-developers-clip" data-modal="Разработчики">
             <h2 class="modal-title" data-content-key="developers_title">Разработчики</h2>
+            <button id="adminLoginBtn" class="admins-admin-btn"></button>
             <div class="developer-list-firts">
                 <div class="developer-list">
                     <div class="developer-card">
@@ -1144,11 +1144,11 @@
 
     <div id="adminPanel" class="admins-admin-panel admins-hidden">
         <div class="admins-panel-header">
-            <h3>⚙️ Панель администратора</h3>
+            <h3>Панель администратора</h3>
         </div>
         <div class="admins-controls">
-            <button id="publishBtn" class="admins-btn admins-btn-success">📢 Опубликовать изменения</button>
-            <button id="logoutBtn" class="admins-btn admins-btn-danger">🚪 Выйти</button>
+            <button id="publishBtn" class="admins-btn admins-btn-success">Опубликовать изменения</button>
+            <button id="logoutBtn" class="admins-btn admins-btn-danger">Выйти</button>
         </div>
         <div id="statusMessage" class="admins-status admins-info">Готов к работе</div>
     </div>
@@ -1157,12 +1157,12 @@
     <div id="loginModal" class="admins-modal admins-hidden">
         <div class="admins-modal-content">
             <div class="admins-panel-header">
-                <h3>🔐 Вход для администратора</h3>
+                <h3>Вход для администратора</h3>
             </div>
             <input type="password" id="passwordInput" class="admins-input-field" placeholder="Введите пароль">
             <button id="loginBtn" class="admins-btn admins-btn-primary" style="width: 100%;">Войти</button>
             <button id="cancelBtn" class="admins-btn admins-btn-secondary" style="width: 100%; margin-top: 8px;">Отмена</button>
-            <div id="loginMessage" class="admins-status"></div>
+           
         </div>
     </div>
 </body>
