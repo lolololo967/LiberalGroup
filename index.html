@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой сайт с админкой</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: Arial, sans-serif; max-width: 1200px; margin: 0 auto; padding: 20px; }
+        .hidden { display: none !important; }
+        
+        .admin-login-btn { 
+            position: fixed; top: 20px; right: 20px; 
+            background: #007bff; color: white; border: none; 
+            padding: 10px 20px; border-radius: 5px; cursor: pointer; 
+        }
+        
+        .admin-panel { 
+            position: fixed; top: 70px; right: 20px; background: white; 
+            border: 2px solid #007bff; padding: 15px; border-radius: 5px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); z-index: 1000;
+        }
+        
+        [contenteditable="true"] { border: 1px dashed #007bff; padding: 5px; margin: 2px; }
+        
+        .modal { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.5); display: flex; justify-content: center; 
+            align-items: center; z-index: 2000; 
+        }
+        
+        .modal-content { background: white; padding: 30px; border-radius: 8px; }
+        
+        .section { margin: 20px 0; padding: 20px; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <!-- Кнопка входа для админов -->
+    <button id="adminLoginBtn" class="admin-login-btn">🔐 Вход для админов</button>
+
+    <!-- Основной контент -->
+    <header>
+        <h1 data-content-key="site_title">Добро пожаловать на наш сайт</h1>
+    </header>
+
+    <main>
+        <section class="section">
+            <h2 data-content-key="welcome_title">Приветствие</h2>
+            <p data-content-key="welcome_text">Добро пожаловать на наш сайт! Здесь вы найдете много полезной информации.</p>
+        </section>
+
+        <section class="section">
+            <h2 data-content-key="about_title">О нас</h2>
+            <p data-content-key="about_text">Мы - команда профессионалов, занимающаяся созданием качественных веб-сайтов.</p>
+        </section>
+
+        <section class="section">
+            <h2 data-content-key="contact_title">Контакты</h2>
+            <p data-content-key="contact_text">Email: info@example.com | Телефон: +7 (999) 123-45-67</p>
+        </section>
+    </main>
+
+    <footer>
+        <p data-content-key="footer_text">© 2024 Все права защищены</p>
+    </footer>
+
+    <!-- Админ панель -->
+    <div id="adminPanel" class="admin-panel hidden">
+        <h3>Панель администратора</h3>
+        <button id="publishBtn">📢 Опубликовать</button>
+        <button id="logoutBtn" style="margin-top: 10px;">Выйти</button>
+    </div>
+
+    <!-- Модальное окно входа -->
+    <div id="loginModal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Вход для администратора</h3>
+            <input type="password" id="adminPassword" placeholder="Введите пароль" style="width: 100%; padding: 10px; margin: 10px 0;">
+            <button id="loginBtn" style="width: 100%; padding: 10px; background: #007bff; color: white; border: none;">Войти</button>
+            <button id="cancelBtn" style="width: 100%; padding: 10px; margin-top: 5px; background: #6c757d; color: white; border: none;">Отмена</button>
+        </div>
+    </div>
+
+    <script>
+        // Конфигурация Supabase - ЗАМЕНИТЕ ЭТИ ЗНАЧЕНИЯ!
+        const SUPABASE_URL = 'https://your-project.supabase.co';
+        const SUPABASE_KEY = 'your-anon-key';
+        
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        let isAdmin = false;
+
+        // Загрузка контента
+        async function loadContent() {
+            const { data } = await supabase.from('site_content').select('*');
+            if (data) {
+                data.forEach(item => {
+                    const elements = document.querySelectorAll(`[data-content-key="${item.content_key}"]`);
+                    elements.forEach(el => el.textContent = item.content_value);
+                });
+            }
+        }
+
+        // Сохранение контента
+        async function saveContent(key, value) {
+            await supabase.from('site_content').upsert({ 
+                content_key: key, 
+                content_value: value 
+            });
+        }
+
+        // Публикация изменений
+        async function publishChanges() {
+            const elements = document.querySelectorAll('[data-content-key]');
+            for (const element of elements) {
+                await saveContent(element.getAttribute('data-content-key'), element.textContent);
+            }
+            alert('Изменения опубликованы!');
+        }
+
+        // Проверка пароля
+        async function checkPassword(password) {
+            // В реальном проекте используйте правильную аутентификацию
+            // Для демо: пароль "admin123"
+            const { data } = await supabase.from('admins').select('*').eq('username', 'admin').single();
+            return data && await verifyPassword(password, data.password_hash);
+        }
+
+        async function verifyPassword(password, hash) {
+            // Упрощенная проверка для демо
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashedPassword = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            
+            // Для демо сравниваем с хешем "admin123"
+            return hashedPassword === '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
+        }
+
+        // Управление редактированием
+        function toggleEditMode(enable) {
+            document.querySelectorAll('[data-content-key]').forEach(el => {
+                el.contentEditable = enable;
+            });
+            document.getElementById('adminPanel').classList.toggle('hidden', !enable);
+            document.getElementById('adminLoginBtn').style.display = enable ? 'none' : 'block';
+        }
+
+        // Инициализация
+        document.addEventListener('DOMContentLoaded', function() {
+            loadContent();
+            
+            // Обработчики событий
+            document.getElementById('adminLoginBtn').addEventListener('click', () => {
+                document.getElementById('loginModal').classList.remove('hidden');
+            });
+            
+            document.getElementById('loginBtn').addEventListener('click', async () => {
+                const password = document.getElementById('adminPassword').value;
+                if (await checkPassword(password)) {
+                    isAdmin = true;
+                    document.getElementById('loginModal').classList.add('hidden');
+                    toggleEditMode(true);
+                } else {
+                    alert('Неверный пароль!');
+                }
+            });
+            
+            document.getElementById('cancelBtn').addEventListener('click', () => {
+                document.getElementById('loginModal').classList.add('hidden');
+            });
+            
+            document.getElementById('publishBtn').addEventListener('click', publishChanges);
+            
+            document.getElementById('logoutBtn').addEventListener('click', () => {
+                isAdmin = false;
+                toggleEditMode(false);
+                loadContent(); // Перезагружаем оригинальный контент
+            });
+        });
+    </script>
+</body>
+</html>
