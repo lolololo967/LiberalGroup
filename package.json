@@ -1,14 +1,5 @@
 {
-  "name": "my-admin-website",
+  "name": "my-admin-site",
   "version": "1.0.0",
-  "description": "Website with admin panel",
-  "main": "index.html",
-  "scripts": {
-    "dev": "echo 'No dev server'",
-    "build": "echo 'No build process'",
-    "start": "serve ."
-  },
-  "dependencies": {
-    "serve": "^14.0.0"
-  }
+  "type": "module"
 }
