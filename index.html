@@ -153,7 +153,14 @@
                     data.forEach(item => {
                         const elements = document.querySelectorAll(`[data-content-key="${item.content_key}"]`);
                         elements.forEach(element => {
-                            element.textContent = item.content_value;
+                            // Декодируем обратно из URL-encoded формата
+                            try {
+                                const decodedValue = decodeURIComponent(item.content_value);
+                                element.textContent = decodedValue;
+                            } catch (e) {
+                                // Если ошибка декодирования, используем оригинальное значение
+                                element.textContent = item.content_value;
+                            }
                         });
                     });
                     showStatus('Контент загружен', 'success');
@@ -164,19 +171,35 @@
             }
         }
 
-        // Сохранение одного элемента контента
+        // Сохранение одного элемента контента (ИСПРАВЛЕННАЯ ВЕРСИЯ)
         async function saveContent(key, value) {
-            const { error } = await supabase
-                .from('site_content')
-                .upsert({ 
-                    content_key: key, 
-                    content_value: value 
-                }, {
-                    onConflict: 'content_key'
-                });
+            try {
+                // Кодируем специальные символы для избежания ошибок кодировки
+                const encodedValue = encodeURIComponent(value);
+                const encodedKey = encodeURIComponent(key);
+                
+                console.log('Сохранение:', key, '->', value);
+                console.log('Закодировано:', encodedKey, '->', encodedValue);
+                
+                const { error } = await supabase
+                    .from('site_content')
+                    .upsert({ 
+                        content_key: encodedKey, 
+                        content_value: encodedValue 
+                    }, {
+                        onConflict: 'content_key'
+                    });
 
-            if (error) {
-                throw new Error('Ошибка сохранения: ' + error.message);
+                if (error) {
+                    console.error('Ошибка Supabase:', error);
+                    throw new Error('Ошибка сохранения: ' + error.message);
+                }
+                
+                console.log('Успешно сохранено:', key);
+                return true;
+            } catch (error) {
+                console.error('Ошибка сохранения:', error);
+                throw error;
             }
         }
 
@@ -215,7 +238,6 @@
         async function checkPassword(password) {
             try {
                 // Для демонстрации используем простую проверку
-                // В реальном проекте пароль должен проверяться на сервере
                 const encoder = new TextEncoder();
                 const data = encoder.encode(password);
                 const hashBuffer = await crypto.subtle.digest('SHA-256', data);
@@ -333,10 +355,15 @@
                         // Если пользователь не админ, обновляем контент
                         if (!isAdmin) {
                             const newData = payload.new;
-                            const elements = document.querySelectorAll(`[data-content-key="${newData.content_key}"]`);
-                            elements.forEach(element => {
-                                element.textContent = newData.content_value;
-                            });
+                            try {
+                                const decodedValue = decodeURIComponent(newData.content_value);
+                                const elements = document.querySelectorAll(`[data-content-key="${newData.content_key}"]`);
+                                elements.forEach(element => {
+                                    element.textContent = decodedValue;
+                                });
+                            } catch (e) {
+                                console.error('Ошибка декодирования:', e);
+                            }
                         }
                     }
                 )
