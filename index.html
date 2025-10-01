@@ -24,6 +24,7 @@
   }
   #adminPanel input {
     margin: 5px 0;
+    width: 100%;
   }
 </style>
 </head>
@@ -40,16 +41,19 @@
   <button id="publishBtn">Опубликовать изменения</button>
 </div>
 
-<script type="module">
-  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.js";
+<!-- Подключаем Supabase через UMD-бандл -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/supabase.min.js"></script>
 
-  const supabaseClient = createClient(
+<script>
+  // Создаём клиента Supabase
+  const supabaseClient = supabase.createClient(
     "https://pwawgeyxzjntystktciz.supabase.co",
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3YXdnZXl4empudHlzdGt0Y2l6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzMjU2NTQsImV4cCI6MjA3NDkwMTY1NH0.nS4TpZT7hq1PW4lLUiDccUmJSobnXWm1GFTWskYy8jI"
   );
 
   let currentUser = null;
 
+  // Загружаем опубликованные тексты
   async function loadContent() {
     const { data, error } = await supabaseClient.from("content").select("*");
     if(error) { console.error(error); return; }
@@ -61,6 +65,7 @@
 
   loadContent();
 
+  // Вход для админов
   document.getElementById("adminLogin").addEventListener("click", async () => {
     const email = prompt("Введите email администратора");
     const password = prompt("Введите пароль");
@@ -75,20 +80,22 @@
     loadDrafts();
   });
 
+  // Загружаем черновики для редактирования
   async function loadDrafts() {
     const { data, error } = await supabaseClient.from("content").select("*");
-    if(error) return console.error(error);
+    if(error) { console.error(error); return; }
 
     const container = document.getElementById("texts");
     container.innerHTML = "";
 
     data.forEach(item => {
       const div = document.createElement("div");
-      div.innerHTML = `<strong>${item.key}</strong>: <input data-key="${item.key}" value="${item.draft_text||item.published_text||''}">`;
+      div.innerHTML = `<strong>${item.key}</strong>: <input data-key="${item.key}" value="${item.draft_text || item.published_text || ''}">`;
       container.appendChild(div);
     });
   }
 
+  // Публикуем изменения
   document.getElementById("publishBtn").addEventListener("click", async () => {
     const inputs = document.querySelectorAll("#texts input");
     for(const input of inputs){
