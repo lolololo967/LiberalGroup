@@ -4,9 +4,27 @@
 <meta charset="UTF-8">
 <title>Liberal Group</title>
 <style>
-  #adminLogin { position: fixed; top:10px; right:10px; padding:8px 12px; background:#6c5ce7; color:white; border:none; border-radius:6px; cursor:pointer; }
-  #adminPanel { display:none; margin-top:20px; padding:10px; border:2px solid #6c5ce7; border-radius:6px; }
-  #adminPanel input { margin:5px 0; }
+  #adminLogin {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    padding: 8px 12px;
+    background-color: #6c5ce7;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+  #adminPanel {
+    display: none;
+    margin-top: 20px;
+    padding: 10px;
+    border: 2px solid #6c5ce7;
+    border-radius: 6px;
+  }
+  #adminPanel input {
+    margin: 5px 0;
+  }
 </style>
 </head>
 <body>
@@ -22,66 +40,70 @@
   <button id="publishBtn">Опубликовать изменения</button>
 </div>
 
-<!-- Подключаем Supabase -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.27.0/dist/supabase.min.js"></script>
-<script>
-  window.addEventListener('DOMContentLoaded', () => {
-    // Создаём клиент через window.Supabase
-    const supabaseClient = window.Supabase.createClient(
-      "https://pwawgeyxzjntystktciz.supabase.co",
-      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3YXdnZXl4empudHlzdGt0Y2l6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzMjU2NTQsImV4cCI6MjA3NDkwMTY1NH0.nS4TpZT7hq1PW4lLUiDccUmJSobnXWm1GFTWskYy8jI"
-    );
+<script type="module">
+  import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.27.0/dist/supabase.mjs";
 
-    let currentUser = null;
+  const supabaseClient = createClient(
+    "https://pwawgeyxzjntystktciz.supabase.co",
+    "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3YXdnZXl4empudHlzdGt0Y2l6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzMjU2NTQsImV4cCI6MjA3NDkwMTY1NH0.nS4TpZT7hq1PW4lLUiDccUmJSobnXWm1GFTWskYy8jI"
+  );
 
-    async function loadContent() {
-      const { data, error } = await supabaseClient.from("content").select("*");
-      if(error) { console.error(error); return; }
-      data.forEach(item => {
-        const el = document.querySelector(`[data-key="${item.key}"]`);
-        if(el) el.innerText = item.published_text || "";
+  let currentUser = null;
+
+  async function loadContent() {
+    const { data, error } = await supabaseClient.from("content").select("*");
+    if(error) { console.error(error); return; }
+    data.forEach(item => {
+      const el = document.querySelector(`[data-key="${item.key}"]`);
+      if(el) el.innerText = item.published_text || "";
+    });
+  }
+
+  loadContent();
+
+  document.getElementById("adminLogin").addEventListener("click", async () => {
+    const email = prompt("Введите email администратора");
+    const password = prompt("Введите пароль");
+    if(!email || !password) return alert("Email и пароль обязательны");
+
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+    if(error) return alert("Ошибка входа: " + error.message);
+
+    currentUser = data.user;
+    alert("Вход выполнен!");
+    document.getElementById("adminPanel").style.display = "block";
+    loadDrafts();
+  });
+
+  async function loadDrafts() {
+    const { data, error } = await supabaseClient.from("content").select("*");
+    if(error) return console.error(error);
+
+    const container = document.getElementById("texts");
+    container.innerHTML = "";
+
+    data.forEach(item => {
+      const div = document.createElement("div");
+      div.innerHTML = `<strong>${item.key}</strong>: <input data-key="${item.key}" value="${item.draft_text||item.published_text||''}">`;
+      container.appendChild(div);
+    });
+  }
+
+  document.getElementById("publishBtn").addEventListener("click", async () => {
+    const inputs = document.querySelectorAll("#texts input");
+    for(const input of inputs){
+      const key = input.dataset.key;
+      const value = input.value;
+      await supabaseClient.from("content").upsert({
+        key,
+        draft_text: value,
+        last_edited_by: currentUser.id
       });
     }
-
+    alert("Все изменения опубликованы!");
     loadContent();
-
-    // Вход для админов
-    document.getElementById("adminLogin").addEventListener("click", async () => {
-      const email = prompt("Введите email администратора");
-      const password = prompt("Введите пароль");
-      if(!email || !password) return alert("Email и пароль обязательны");
-
-      const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-      if(error) return alert("Ошибка входа: " + error.message);
-
-      currentUser = data.user;
-      document.getElementById("adminPanel").style.display = "block";
-      loadDrafts();
-    });
-
-    async function loadDrafts() {
-      const { data, error } = await supabaseClient.from("content").select("*");
-      if(error) return console.error(error);
-
-      const container = document.getElementById("texts");
-      container.innerHTML = "";
-      data.forEach(item => {
-        const div = document.createElement("div");
-        div.innerHTML = `<strong>${item.key}</strong>: <input data-key="${item.key}" value="${item.draft_text||item.published_text||''}">`;
-        container.appendChild(div);
-      });
-    }
-
-    // Публикация изменений
-    document.getElementById("publishBtn").addEventListener("click", async () => {
-      const inputs = document.querySelectorAll("#texts input");
-      for(const input of inputs){
-        await supabaseClient.from("content").upsert({ key: input.dataset.key, draft_text: input.value, last_edited_by: currentUser.id });
-      }
-      alert("Все изменения опубликованы!");
-      loadContent();
-    });
   });
 </script>
+
 </body>
 </html>
