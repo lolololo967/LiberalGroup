@@ -11,15 +11,15 @@
 </head>
 <body id="body">
     <div class="nav-container">
-        <div class="nav-buttons">
-            <button>Конституция</button>
-            <button>Информация</button>
-            <button>Парламент</button>
-            <button>Главная</button>
-            <button>Проекты</button>
-            <button>Партии</button>
-            <button>Разработчики</button>
-        </div>
+            <div class="nav-buttons">
+                <button data-content-key="nav_constitution">Конституция</button>
+                <button data-content-key="nav_info">Информация</button>
+                <button data-content-key="nav_parliament">Парламент</button>
+                <button data-content-key="nav_main">Главная</button>
+                <button data-content-key="nav_projects">Проекты</button>
+                <button data-content-key="nav_parties">Партии</button>
+                <button data-content-key="nav_developers">Разработчики</button>
+            </div>
         </div>
     <div class="modals-wrapper">
         <div class="modal" data-modal="Конституция">
@@ -39,17 +39,17 @@
             </div>
         </div>
         <div class="modal" data-modal="Информация">
-            <h2 class="modal-title">Информация</h2>
+            <h2 class="modal-title" data-content-key="info_title">Информация</h2>
             <div class="centered-circle">
                 <div class="circle-part part1"></div>
                 <div class="circle-part part2"></div>
                 <div class="circle-part part3"></div>
                 <div class="triangle"></div>
             </div>
-            
-            <div class="hover-info" id="info-part1">Туториалы</div>
-            <div class="hover-info" id="info-part2">Репутации</div>
-            <div class="hover-info" id="info-part3">Роли</div>
+    
+            <div class="hover-info" id="info-part1" data-content-key="info_tutorials">Туториалы</div>
+            <div class="hover-info" id="info-part2" data-content-key="info_reputation">Репутации</div>
+            <div class="hover-info" id="info-part3" data-content-key="info_roles">Роли</div>
         </div>
 
 
@@ -67,108 +67,108 @@
         </div>
 
         <div class="modal" data-modal="Роли">
-             <button class="modal-button modal-back">Назад</button>
-            <h2 class="modal-title">Роли</h2>
+            <button class="modal-button modal-back">Назад</button>
+            <h2 class="modal-title" data-content-key="roles_title">Роли</h2>
             <div class="modal-underline"></div>
             <div class="roles-container">
-                <h2 class="modal-title title-role">Основные роли</h2>
+                <h2 class="modal-title title-role" data-content-key="main_roles_title">Основные роли</h2>
                 <div class="main-roles-buttons">
-                    <button data-role="Политические роли">Политические роли</button>
-                    <button data-role="Роли за актив">Роли за актив</button>
-                    <button data-role="Роли за репутацию">Роли за репутацию</button>
+                    <button data-role="Политические роли" data-content-key="political_roles_btn">Политические роли</button>
+                    <button data-role="Роли за актив" data-content-key="activity_roles_btn">Роли за актив</button>
+                    <button data-role="Роли за репутацию" data-content-key="reputation_roles_btn">Роли за репутацию</button>
                 </div>
                 <hr class="game-roles-line" />
-                <h2 class="modal-title title-role">Игровые роли</h2>
+                <h2 class="modal-title title-role" data-content-key="game_roles_title">Игровые роли</h2>
                 <div class="game-roles-buttons">
-                    <button data-role="Hearts Of Iron 4">Hearts Of Iron 4</button>
-                    <button data-role="StandOff 2">StandOff 2</button>
-                    <button data-role="CS 2">Сounter Strike 2</button>
-                    <button data-role="SCP: Secret Laboratory">SCP: Secret Laboratory</button>
-                    <button data-role="Deceit">Deceit</button>
-                    <button data-role="War Thunder">War Thunder</button>
-                    <button data-role="PUBG">PUBG</button>
-                    <button data-role="Titanfall 2">Titanfall 2</button>
-                    <button data-role="Factorio">Factorio</button>
-                    <button data-role="War Selection">War Selection</button>
-                    <button data-role="Terraria">Terraria</button>
+                    <button data-role="Hearts Of Iron 4" data-content-key="hoi4_btn">Hearts Of Iron 4</button>
+                    <button data-role="StandOff 2" data-content-key="standoff2_btn">StandOff 2</button>ыы
+                    <button data-role="CS 2" data-content-key="cs2_btn">Сounter Strike 2</button>
+                    <button data-role="SCP: Secret Laboratory" data-content-key="scp:sl_btn">SCP: Secret Laboratory</button>
+                    <button data-role="Deceit" data-content-key="Deceit_btn">Deceit</button>
+                    <button data-role="War Thunder" data-content-key="WarThunder_btn">War Thunder</button>
+                    <button data-role="PUBG" data-content-key="PUBG_btn">PUBG</button>
+                    <button data-role="Titanfall 2" data-content-key="Titanfall2_btn">Titanfall 2</button>
+                    <button data-role="Factorio" data-content-key="Factorio_btn">Factorio</button>
+                    <button data-role="War Selection" data-content-key="WarSelection_btn">War Selection</button>
+                    <button data-role="Terraria" data-content-key="Terraria_btn">Terraria</button>
                 </div>
             </div>
         </div>
         <div class="modal" data-modal="Политические роли">
             <button class="modal-button modal-back">Назад</button>
-            <h2 class="modal-title">Политические роли</h2>
+            <h2 class="modal-title" data-content-key="political_roles_title">Политические роли</h2>
             <div class="modal-underline"></div>
             <div class="pol-dop">
                 <div class="polit-con">
-                     <div class="role-row-pol">
+                    <div class="role-row-pol">
                         <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #4a8fcc 0%, rgba(74,143,204,0.5) 40%, rgba(255,255,255,0) 100%)">
-                            <span>Участник</span>
+                            <span data-content-key="role_member">Участник</span>
                         </div>
-                        <div class="role-right-pol">
+                        <div class="role-right-pol" data-content-key="role_member_desc">
                             человек, прошедший пробный срок и ставший частью ЛГ.
                         </div>
                     </div>
                     <div class="role-row-pol">
                         <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #cc5cc8 0%, rgba(204,92,200,0.5) 40%, rgba(255,255,255,0) 100%)">
-                            <span>Пробный Срок</span>
+                            <span data-content-key="role_term">Пробный Срок</span>
                         </div>
-                        <div class="role-right-pol">
+                        <div class="role-right-pol" data-content-key="role_term_desc">
                             человек, который только прибыл в группу и должен показать, что он активен и достоин стать частью ЛГ.
                         </div>
                     </div>
                     <div class="role-row-pol">
                         <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #835ccc 0%, rgba(55,0,194,0.5) 40%, rgba(255,255,255,0) 100%)">
-                            <span>Либеральная Элита</span>
+                            <span data-content-key="role_LiberalElit">Либеральная Элита</span>
                         </div>
-                        <div class="role-right-pol">
+                        <div class="role-right-pol" data-content-key="role_LiberalElit_desc">
                             участники, которые полностью лояльны группе и заслужили звание элиты за свой стаж в ЛГ.
                         </div>
                     </div>
                     <div class="role-row-pol">
                         <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #ccaa29 0%, rgba(204,170,41,0.5) 40%, rgba(255,255,255,0) 100%)">
-                            <span>Лидер</span>
+                            <span data-content-key="role_leader">Лидер</span>
                         </div>
-                        <div class="role-right-pol">
+                        <div class="role-right-pol" data-content-key="role_leader_desc">
                             нынешний лидер ЛГ, который отвечает за актив внутри ЛГ, а также за добавление новых возможностей и ролей.
                         </div>
                     </div>
                     <div class="role-row-pol">
                         <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #6800b3 0%, rgba(94,0,161,0.5) 40%, rgba(255,255,255,0) 100%)">
-                            <span>Премьер Министр</span>
+                            <span data-content-key="role_primearMinistr">Премьер Министр</span>
                         </div>
-                        <div class="role-right-pol">
+                        <div class="role-right-pol" data-content-key="role_primearMinistr_desc">
                             участник парламента, выбранный другими участниками парламента, отвечающий за политическую часть ЛГ.
                         </div>
                     </div>
                     <div class="role-row-pol">
                         <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #8a00cf 0%, rgba(129,0,194,0.5) 40%, rgba(255,255,255,0) 100%)">
-                            <span>Представитель Парламента</span>
+                            <span data-content-key="role_parlamentMember">Представитель Парламента</span>
                         </div>
-                        <div class="role-right-pol">
+                        <div class="role-right-pol" data-content-key="role_parlamentMember_desc">
                             участники которые состоят в парламенте. Они выбирают Премьер Министра и выполняют задачи законодательной власти.
                         </div>
                     </div>
                     <div class="role-row-pol">
                         <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #49626d 0%, rgba(73,98,109,0.5) 40%, rgba(255,255,255,0) 100%)">
-                            <span>Агент Б.Б.Л.Г</span>
+                            <span data-content-key="role_Agent">Агент Б.Б.Л.Г</span>
                         </div>
-                        <div class="role-right-pol">
+                        <div class="role-right-pol" data-content-key="role_Agent_desc">
                             участники, соблюдающие порядок внутри ЛГ, предотвращающие нарушение правил. Агенты ВБЛГ имеют модераторские права в ЛГ.
                         </div>
                     </div>
-                    <div class="role-row-pol">
+                    <div class="role-row-pol" >
                         <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #49626d 0%, rgba(73,98,109,0.5) 40%, rgba(255,255,255,0) 100%)">
-                            <span>Агент Вн.Б.Л.Г</span>
+                            <span data-content-key="role_AgentVn">Агент Вн.Б.Л.Г</span>
                         </div>
-                        <div class="role-right-pol">
+                        <div class="role-right-pol" data-content-key="role_AgentVn_desc">
                             участники, которые предотвращают попадание внешних угроз с враждебных групп внутрь ЛГ.
                         </div>
                     </div>
                     <div class="role-row-pol">
                         <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #4a8fcc 0%, rgba(74,143,204,0.5) 40%, rgba(255,255,255,0) 100%)">
-                            <span>VIP Премиальный Участник</span>
+                            <span data-content-key="role_Vip">VIP Премиальный Участник</span>
                         </div>
-                        <div class="role-right-pol">
+                        <div class="role-right-pol" data-content-key="role_Vip_desc">
                             роли, выдающиеся за буст сервера, дающие возможность писать в новости.
                         </div>
                     </div>
@@ -179,22 +179,22 @@
 
 
         <div class="modal" data-modal="Роли за актив">
-            <button class="modal-button modal-back">Назад</button>
-            <h2 class="modal-title">Роли за актив</h2>
+            <button class="modal-button modal-back" data-content-key="back_btn">Назад</button>
+            <h2 class="modal-title" data-content-key="roleforactive">Роли за актив</h2>
             <div class="modal-underline"></div>
-                <div class="activity-points-firts">
-                    <div class="activity-points">
-                    <div data-level="0" data-label="Мертв (ничего не делает в группе)">act -0</div>
-                    <div data-level="1" data-label="Ужасный Актив (ставит реакции или голосует)">act +1</div>
-                    <div data-level="2" data-label="Низкий Актив (иногда пишет в чатах)">act +2</div>
-                    <div data-level="3" data-label="Не особый Актив (ранее был на уровне 0–2, находится в группе менее часа)">act +3</div>
-                    <div data-level="4" data-label="Нормальный Актив (ранее был на уровне 0–3, находится в группе не менее 1 часа)">act +4</div>
-                    <div data-level="5" data-label="Хороший Актив (имеет Актив 4 и находится в группе не менее 2 часов)">act +5</div>
-                    <div data-level="6" data-label="Высокий Актив (имеет Актив 5 и находится в группе не менее 2 часов)">act +6</div>
-                    <div data-level="7" data-label="Отличный Актив (имеет Актив 6 и находится в группе не менее 3 часов)">act +7</div>
-                    <div data-level="8" data-label="Очень Хороший Актив (имеет Актив 7 и находится в группе не менее 3 часов)">act +8</div>
-                    <div data-level="9" data-label="Крайне Высокий Актив (имеет Актив 8 и находится в группе не менее 4 часов)">act +9</div>
-                    <div data-level="10" data-label="Превосходный Актив (имеет Актив 9 и находится в группе не менее 4 часов)">act +10</div>
+            <div class="activity-points-firts">
+                <div class="activity-points">
+                    <div data-level="0" data-label="Мертв (ничего не делает в группе)" data-content-key="dead_member">act -0</div>
+                    <div data-level="1" data-label="Ужасный Актив (ставит реакции или голосует)" data-content-key="terrible_active">act +1</div>
+                    <div data-level="2" data-label="Низкий Актив (иногда пишет в чатах)" data-content-key="low_active">act +2</div>
+                    <div data-level="3" data-label="Не особый Актив (ранее был на уровне 0–2, находится в группе менее часа)" data-content-key="weak_active">act +3</div>
+                    <div data-level="4" data-label="Нормальный Актив (ранее был на уровне 0–3, находится в группе не менее 1 часа)" data-content-key="normal_active">act +4</div>
+                    <div data-level="5" data-label="Хороший Актив (имеет Актив 4 и находится в группе не менее 2 часов)" data-content-key="good_active">act +5</div>
+                    <div data-level="6" data-label="Высокий Актив (имеет Актив 5 и находится в группе не менее 2 часов)" data-content-key="high_active">act +6</div>
+                    <div data-level="7" data-label="Отличный Актив (имеет Актив 6 и находится в группе не менее 3 часов)" data-content-key="excellent_active">act +7</div>
+                    <div data-level="8" data-label="Очень Хороший Актив (имеет Актив 7 и находится в группе не менее 3 часов)" data-content-key="very_good_active">act +8</div>
+                    <div data-level="9" data-label="Крайне Высокий Актив (имеет Актив 8 и находится в группе не менее 4 часов)" data-content-key="extremely_high_active">act +9</div>
+                    <div data-level="10" data-label="Превосходный Актив (имеет Актив 9 и находится в группе не менее 4 часов)" data-content-key="superb_active">act +10</div>
                 </div>
 
                 <div class="activity-tooltip" id="activity-tooltip"></div>
@@ -207,43 +207,43 @@
 
         <div class="modal" data-modal="Роли за репутацию">
             <button class="modal-button modal-back">Назад</button>
-            <h2 class="modal-title">Роли за репутацию</h2>
-             <div class="reputation-section-first">
+            <h2 class="modal-title" data-content-key="roleforreputation">Роли за репутацию</h2>
+            <div class="reputation-section-first">
                 <section class="reputation-section">
-                    <h3>Своя Репутация <small>(Зависит от вашего уровне активности)</small></h3>
+                    <h3 data-content-key="own_reputation_title">Своя Репутация <small data-content-key="own_reputation_subtitle">(Зависит от вашего уровне активности)</small></h3>
                     <table class="reputation-table">
                         <thead>
                             <tr>
-                                <th class="left-col">Уровень активности</th>
-                                <th class="right-col">Максимальное изменение репутации</th>
+                                <th class="left-col" data-content-key="activity_level_header">Уровень активности</th>
+                                <th class="right-col" data-content-key="max_reputation_change_header">Максимальное изменение репутации</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr><td class="left-col">Актив 3 и ниже</td><td class="right-col">Максимально на 1</td></tr>
-                            <tr><td class="left-col">Актив 4 - 6</td><td class="right-col">Максимально на 2</td></tr>
-                            <tr><td class="left-col">Актив 7 - 8</td><td class="right-col">Максимально на 3</td></tr>
-                            <tr><td class="left-col">Актив 9</td><td class="right-col">Максимально на 4</td></tr>
-                            <tr><td class="left-col">Актив 10</td><td class="right-col">Неограниченно</td></tr>
+                            <tr><td class="left-col" data-content-key="active_3_or_less">Актив 3 и ниже</td><td class="right-col" data-content-key="max_1_point">Максимально на 1</td></tr>
+                            <tr><td class="left-col" data-content-key="active_4_to_6">Актив 4 - 6</td><td class="right-col" data-content-key="max_2_points">Максимально на 2</td></tr>
+                            <tr><td class="left-col" data-content-key="active_7_to_8">Актив 7 - 8</td><td class="right-col" data-content-key="max_3_points">Максимально на 3</td></tr>
+                            <tr><td class="left-col" data-content-key="active_9">Актив 9</td><td class="right-col" data-content-key="max_4_points">Максимально на 4</td></tr>
+                            <tr><td class="left-col" data-content-key="active_10">Актив 10</td><td class="right-col" data-content-key="unlimited_points">Неограниченно</td></tr>
                         </tbody>
                     </table>
                 </section>
 
                 <section class="reputation-section">
-                    <h3>Чужая Репутация <small>(Зависит от вашей текущей репутации)</small></h3>
+                    <h3 data-content-key="others_reputation_title">Чужая Репутация <small data-content-key="others_reputation_subtitle">(Зависит от вашей текущей репутации)</small></h3>
                     <table class="reputation-table">
                         <thead>
                             <tr>
-                                <th class="left-col">Ваша репутация</th>
-                                <th class="right-col">Максимальное изменение чужой репутации</th>
+                                <th class="left-col" data-content-key="your_reputation_header">Ваша репутация</th>
+                                <th class="right-col" data-content-key="max_others_reputation_change_header">Максимальное изменение чужой репутации</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr><td class="left-col">-2 и ниже</td><td class="right-col">Максимально на 1</td></tr>
-                            <tr><td class="left-col">От -1 до +1</td><td class="right-col">Максимально на 2</td></tr>
-                            <tr><td class="left-col">+2</td><td class="right-col">Максимально на 3</td></tr>
-                            <tr><td class="left-col">+3</td><td class="right-col">Максимально на 4</td></tr>
-                            <tr><td class="left-col">+4</td><td class="right-col">Максимально на 7</td></tr>
-                            <tr><td class="left-col">+5</td><td class="right-col">Неограниченно</td></tr>
+                            <tr><td class="left-col" data-content-key="reputation_minus_2_or_less">-2 и ниже</td><td class="right-col" data-content-key="max_1_point_others">Максимально на 1</td></tr>
+                            <tr><td class="left-col" data-content-key="reputation_minus_1_to_plus_1">От -1 до +1</td><td class="right-col" data-content-key="max_2_points_others">Максимально на 2</td></tr>
+                            <tr><td class="left-col" data-content-key="reputation_plus_2">+2</td><td class="right-col" data-content-key="max_3_points_others">Максимально на 3</td></tr>
+                            <tr><td class="left-col" data-content-key="reputation_plus_3">+3</td><td class="right-col" data-content-key="max_4_points_others">Максимально на 4</td></tr>
+                            <tr><td class="left-col" data-content-key="reputation_plus_4">+4</td><td class="right-col" data-content-key="max_7_points_others">Максимально на 7</td></tr>
+                            <tr><td class="left-col" data-content-key="reputation_plus_5">+5</td><td class="right-col" data-content-key="unlimited_points_others">Неограниченно</td></tr>
                         </tbody>
                     </table>
                 </section>
@@ -1036,30 +1036,30 @@
         </div>
 
         <div class="modal" data-modal="Парламент">
-            <h2 class="modal-title">Парламент</h2>
+            <h2 class="modal-title" data-content-key="Parlament">Парламент</h2>
 
             <div class="label-left">
                 <div class="person-info">
-                    <span class="name">Timofey</span>
+                    <span class="name"  data-content-key="primearministrname">Timofey</span>
                     <div class="avatar avatar-left"></div>
                 </div>
                 <div class="role-info role-left">
-                    <p>> Либеральная элита</p>
-                    <p>> Президент партии ЛР</p>
-                    <p>> Репутация +5</p>
-                    <h2>Премьер Министр</h2>
+                    <p data-content-key="primearministrtext_1">> Либеральная элита</p>
+                    <p data-content-key="primearministrtext_2">> Президент партии ЛР</p>
+                    <p data-content-key="primearministrtext_3">> Репутация +5</p>
+                    <h2 data-content-key="primearministrtext_4">Премьер Министр</h2>
                 </div>
             </div>
 
             <div class="label-right">
                 <div class="person-info">
                     <div class="avatar avatar-right"></div>
-                    <span class="name">Krolituki</span>
+                    <span class="name"  data-content-key="leadername">Krolituki</span>
                 </div>
                 <div class="role-info role-right">
-                    <p>Лидер Либеральной группы <</p>
-                    <p>Репутация +4 <</p>
-                    <h2>Лидер / Президент</h2>
+                    <p data-content-key="leadertext_1">Лидер Либеральной группы <</p>
+                    <p data-content-key="leadertext_2">Репутация +4 <</p>
+                    <h2 data-content-key="leadertext_3">Лидер / Президент</h2>
                 </div>
             </div>
 
@@ -1085,7 +1085,7 @@
         </div>
     
         <div class="modal" data-modal="Разработчики">
-            <h2 class="modal-title">Разработчики</h2>
+            <h2 class="modal-title" data-content-key="developers_title">Разработчики</h2>
             <div class="developer-list-firts">
                 <div class="developer-list">
                     <div class="developer-card">
@@ -1095,7 +1095,7 @@
                                     style="--avatar-bottom: url('https://avatars.akamai.steamstatic.com/2008aa582c47367715485af24871261c2528ea08_full.jpg');
                                             --avatar-top: url('https://cdn.akamai.steamstatic.com/steamcommunity/public/images/items/1232580/7e41e2a48ea057e0f6267ff736815cd1354e04d3.png');">
                                 </div>
-                                <div class="developer-name">Fazenn</div>
+                                <div class="developer-name" data-content-key="dev_fazenn_name">Fazenn</div>
                             </div>
                         </div>
                         <video class="developer-card__video" autoplay muted loop playsinline>
@@ -1104,8 +1104,8 @@
                         </video>
                         <div class="developer-card__overlay">
                             <div class="developer-role-texts">
-                                <span class="developer-role">Код</span>
-                                <span class="developer-role">Дизайн</span>
+                                <span class="developer-role" data-content-key="dev_fazenn_role1">Код</span>
+                                <span class="developer-role" data-content-key="dev_fazenn_role2">Дизайн</span>
                             </div>
                         </div>
                     </div>
@@ -1116,7 +1116,7 @@
                                 style="--avatar-bottom: url('images/TimofeyAvatar.png');
                                         --avatar-top: url('https://cdn.fastly.steamstatic.com/steamcommunity/public/images/items/253230/27ef3d62a0e42bf4ac60d426f2f172e1790ec0fd.png');">
                                 </div>
-                                <div class="developer-name">Timofey</div>
+                                <div class="developer-name" data-content-key="dev_timofey_name">Timofey</div>
                             </div>
                         </div>
                         <video class="developer-card__video" autoplay muted loop playsinline>
@@ -1125,8 +1125,8 @@
                         </video>
                         <div class="developer-card__overlay">
                             <div class="developer-role-texts">
-                                <span class="developer-role">Куратор</span>
-                                <span class="developer-role">Советник по дизайну</span>
+                                <span class="developer-role" data-content-key="dev_timofey_role1">Куратор</span>
+                                <span class="developer-role" data-content-key="dev_timofey_role2">Советник по дизайну</span>
                             </div>
                         </div>
                     </div>
@@ -1135,6 +1135,12 @@
           
         </div>
     </div>
+
+    <div class="square-container"></div>
+    <header class="header">
+        <h1 class="typewriter"></h1>
+        <button class="tests-button">Тесты</button>
+    </header>
 
     <div id="adminPanel" class="admins-admin-panel admins-hidden">
         <div class="admins-panel-header">
@@ -1159,14 +1165,6 @@
             <div id="loginMessage" class="admins-status"></div>
         </div>
     </div>
-    
-    <div class="square-container"></div>
-    <header class="header">
-        <h1 class="typewriter"></h1>
-        <button class="tests-button">Тесты</button>
-    </header>
-
-    
 </body>
     <script src="admin.js"></script>
     <script src="three.min.js"></script>
