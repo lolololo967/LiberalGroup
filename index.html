@@ -6,72 +6,15 @@
     <title>Мой сайт с админкой</title>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <style>
-        body { 
-            font-family: Arial, sans-serif; 
-            max-width: 800px; 
-            margin: 0 auto; 
-            padding: 20px; 
-            background: #f5f5f5;
-        }
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; background: #f5f5f5; }
         .hidden { display: none !important; }
-        .admin-btn { 
-            position: fixed; 
-            top: 20px; 
-            right: 20px; 
-            padding: 10px 15px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .admin-panel { 
-            position: fixed; 
-            top: 70px; 
-            right: 20px; 
-            background: white;
-            padding: 15px;
-            border: 2px solid #007bff;
-            border-radius: 5px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        [contenteditable="true"] { 
-            border: 1px dashed #007bff; 
-            padding: 5px; 
-            margin: 2px;
-            background: #f8f9fa;
-        }
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            min-width: 300px;
-        }
-        .input-field {
-            width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        .btn {
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin: 5px;
-        }
+        .admin-btn { position: fixed; top: 20px; right: 20px; padding: 10px 15px; background: #007bff; color: white; border: none; border-radius: 5px; cursor: pointer; }
+        .admin-panel { position: fixed; top: 70px; right: 20px; background: white; padding: 15px; border: 2px solid #007bff; border-radius: 5px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        [contenteditable="true"] { border: 1px dashed #007bff; padding: 5px; margin: 2px; background: #f8f9fa; }
+        .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; }
+        .modal-content { background: white; padding: 30px; border-radius: 8px; min-width: 300px; }
+        .input-field { width: 100%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 4px; }
+        .btn { padding: 10px 15px; border: none; border-radius: 4px; cursor: pointer; margin: 5px; }
         .btn-primary { background: #007bff; color: white; }
         .btn-success { background: #28a745; color: white; }
         .btn-danger { background: #dc3545; color: white; }
@@ -113,35 +56,15 @@
     </div>
 
     <script>
-        // ⚠️ ЗАМЕНИТЕ ЭТИ ЗНАЧЕНИЯ НА ВАШИ РЕАЛЬНЫЕ ИЗ SUPABASE!
-        const SUPABASE_URL = 'https://ВАШ_PROJECT_ID.supabase.co';
-        const SUPABASE_KEY = 'ВАШ_ANON_KEY';
+        // ⚠️ ВАЖНО: ЗАМЕНИТЕ ЭТИ ЗНАЧЕНИЯ НА РЕАЛЬНЫЕ ИЗ SUPABASE!
+        // Должны быть только английские буквы, цифры и символы
+        const SUPABASE_URL = 'https://pwawgeyxzjntystktciz.supabase.co'; // ЗАМЕНИТЕ на ваш реальный URL
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3YXdnZXl4empudHlzdGt0Y2l6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzMjU2NTQsImV4cCI6MjA3NDkwMTY1NH0.nS4TpZT7hq1PW4lLUiDccUmJSobnXWm1GFTWskYy8jI'; // ЗАМЕНИТЕ на ваш реальный ключ
 
         // Инициализация Supabase
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
         let isAdmin = false;
-
-        // Функции для кодирования/декодирования в Base64
-        function encodeToBase64(str) {
-            try {
-                // Кодируем в Base64 для безопасной передачи
-                return btoa(unescape(encodeURIComponent(str)));
-            } catch (e) {
-                console.error('Ошибка кодирования:', e);
-                return str;
-            }
-        }
-
-        function decodeFromBase64(str) {
-            try {
-                // Декодируем из Base64
-                return decodeURIComponent(escape(atob(str)));
-            } catch (e) {
-                console.error('Ошибка декодирования:', e);
-                return str;
-            }
-        }
 
         // Функция для показа статуса
         function showStatus(message, type = 'info') {
@@ -174,15 +97,7 @@
                     data.forEach(item => {
                         const elements = document.querySelectorAll(`[data-content-key="${item.content_key}"]`);
                         elements.forEach(element => {
-                            try {
-                                // Декодируем из Base64
-                                const decodedValue = decodeFromBase64(item.content_value);
-                                element.textContent = decodedValue;
-                            } catch (e) {
-                                // Если ошибка декодирования, используем оригинальное значение
-                                console.warn('Ошибка декодирования для ключа:', item.content_key);
-                                element.textContent = item.content_value;
-                            }
+                            element.textContent = item.content_value;
                         });
                     });
                     showStatus('Контент загружен', 'success');
@@ -195,20 +110,16 @@
             }
         }
 
-        // Сохранение одного элемента контента (ИСПРАВЛЕННАЯ ВЕРСИЯ с Base64)
+        // Сохранение одного элемента контента
         async function saveContent(key, value) {
             try {
                 console.log('Сохранение:', key, '->', value);
-                
-                // Кодируем значение в Base64 для безопасной передачи
-                const encodedValue = encodeToBase64(value);
-                console.log('Закодировано в Base64:', encodedValue);
                 
                 const { error } = await supabase
                     .from('site_content')
                     .upsert({ 
                         content_key: key, 
-                        content_value: encodedValue 
+                        content_value: value 
                     }, {
                         onConflict: 'content_key'
                     });
@@ -259,14 +170,12 @@
         // Проверка пароля
         async function checkPassword(password) {
             try {
-                // Для демонстрации используем простую проверку
                 const encoder = new TextEncoder();
                 const data = encoder.encode(password);
                 const hashBuffer = await crypto.subtle.digest('SHA-256', data);
                 const hashArray = Array.from(new Uint8Array(hashBuffer));
                 const hashedPassword = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
                 
-                // Хеш для пароля "admin123"
                 const correctHash = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
                 
                 return hashedPassword === correctHash;
@@ -299,10 +208,8 @@
         document.addEventListener('DOMContentLoaded', function() {
             console.log('Сайт загружен. Supabase URL:', SUPABASE_URL);
             
-            // Загружаем контент при старте
             loadContent();
             
-            // Обработчики событий
             document.getElementById('adminLoginBtn').addEventListener('click', function() {
                 document.getElementById('loginModal').classList.remove('hidden');
                 document.getElementById('passwordInput').value = '';
@@ -350,46 +257,20 @@
             document.getElementById('logoutBtn').addEventListener('click', function() {
                 isAdmin = false;
                 toggleEditMode(false);
-                loadContent(); // Перезагружаем оригинальный контент
+                loadContent();
             });
 
-            // Enter для входа
             document.getElementById('passwordInput').addEventListener('keypress', function(e) {
                 if (e.key === 'Enter') {
                     document.getElementById('loginBtn').click();
                 }
             });
 
-            // Клик вне модального окна
             document.getElementById('loginModal').addEventListener('click', function(e) {
                 if (e.target.id === 'loginModal') {
                     document.getElementById('loginModal').classList.add('hidden');
                 }
             });
-
-            // Real-time подписка на изменения
-            supabase
-                .channel('public:site_content')
-                .on('postgres_changes', 
-                    { event: '*', schema: 'public', table: 'site_content' }, 
-                    (payload) => {
-                        console.log('Получено обновление:', payload);
-                        // Если пользователь не админ, обновляем контент
-                        if (!isAdmin) {
-                            const newData = payload.new;
-                            try {
-                                const decodedValue = decodeFromBase64(newData.content_value);
-                                const elements = document.querySelectorAll(`[data-content-key="${newData.content_key}"]`);
-                                elements.forEach(element => {
-                                    element.textContent = decodedValue;
-                                });
-                            } catch (e) {
-                                console.error('Ошибка декодирования:', e);
-                            }
-                        }
-                    }
-                )
-                .subscribe();
         });
     </script>
 </body>
