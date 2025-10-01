@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мой сайт</title>
+    <style>
+        body { font-family: Arial; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .hidden { display: none; }
+        .admin-btn { position: fixed; top: 20px; right: 20px; padding: 10px; }
+        [contenteditable="true"] { border: 1px dashed blue; padding: 5px; }
+    </style>
+</head>
+<body>
+    <button id="adminLoginBtn" class="admin-btn">Вход для админов</button>
+
+    <h1 data-content-key="title">Добро пожаловать на сайт</h1>
+    
+    <div data-content-key="content">
+        <p>Это тестовый контент. Войдите как администратор чтобы редактировать.</p>
+    </div>
+
+    <div id="adminPanel" class="hidden">
+        <button id="publishBtn">Опубликовать</button>
+        <button id="logoutBtn">Выйти</button>
+    </div>
+
+    <div id="loginModal" class="hidden">
+        <div>
+            <h3>Вход</h3>
+            <input type="password" id="passwordInput" placeholder="Пароль">
+            <button id="loginBtn">Войти</button>
+            <button id="cancelBtn">Отмена</button>
+        </div>
+    </div>
+
+    <script>
+        // Простой тестовый скрипт
+        document.getElementById('adminLoginBtn').addEventListener('click', function() {
+            document.getElementById('loginModal').classList.remove('hidden');
+        });
+
+        document.getElementById('loginBtn').addEventListener('click', function() {
+            const password = document.getElementById('passwordInput').value;
+            if (password === 'admin123') {
+                document.getElementById('loginModal').classList.add('hidden');
+                document.getElementById('adminPanel').classList.remove('hidden');
+                document.querySelectorAll('[data-content-key]').forEach(el => {
+                    el.contentEditable = true;
+                });
+            } else {
+                alert('Неверный пароль!');
+            }
+        });
+
+        document.getElementById('cancelBtn').addEventListener('click', function() {
+            document.getElementById('loginModal').classList.add('hidden');
+        });
+
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            document.getElementById('adminPanel').classList.add('hidden');
+            document.querySelectorAll('[data-content-key]').forEach(el => {
+                el.contentEditable = false;
+            });
+        });
+
+        document.getElementById('publishBtn').addEventListener('click', function() {
+            alert('В реальном сайте здесь будет сохранение в базу данных!');
+        });
+
+        console.log('Сайт загружен!');
+    </script>
+</body>
+</html>
