@@ -876,7 +876,7 @@ border: 2px solid red
 .developer-card {
   position: relative;
   width: 500px;
-  height: 200px;
+  height: 190px;
   overflow: hidden;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.5);
 }
@@ -1126,7 +1126,7 @@ border: 2px solid red
     color: #ffffff;
     font-weight: bold;
     font-family: 'rob', sans-serif;
-    font-size: 11px;
+    font-size: 14px;
     z-index: 2;
 }
 
@@ -1143,134 +1143,142 @@ border: 2px solid red
 
 .admins-admin-btn { 
     position: fixed; 
-    top: 20px; 
-    right: 20px; 
-    padding: 10px 20px;
-    background: #007bff;
-    color: white;
+    top: -1px; 
+    left: -1px; 
+    width: 100px;
+    height: 100px;
     border: none;
-    border-radius: 5px;
     cursor: pointer;
-    font-size: 14px;
     z-index: 10000;
+    font-family: "rob";
+    clip-path: polygon(0 0, 0% 100%, 100% 0);
+          background-color: rgba(255, 0, 0, 0.2);
+    backdrop-filter: blur(3px);
 }
-
+.admins-admin-btn::before{
+  content: "";
+  position: absolute;
+  top: 10px; 
+  left: 10px; 
+  width: 40px;
+  height: 40px;
+  background: url(images/admin_lock_padlock_icon_205891.svg);
+}
 .admins-admin-panel { 
     position: fixed; 
     top: 70px; 
     right: 20px; 
-    background: white;
     padding: 20px;
-    border: 2px solid #007bff;
-    border-radius: 8px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    border: 1px solid #ff0000;
     z-index: 9999;
     min-width: 250px;
-}
+      background-color: rgba(1, 1, 1, 0.5);
+    backdrop-filter: blur(3px);
+  clip-path: polygon(0 0, 99% 1%, 100% 100%, 1% 99%);
 
-.admins-editable[contenteditable="true"] { 
-    border: 2px dashed #007bff; 
-    padding: 8px; 
-    margin: 4px;
-    background: #f8f9fa;
-    border-radius: 4px;
-    transition: all 0.3s ease;
-}
 
-.admins-editable[contenteditable="true"]:focus { 
-    outline: none; 
-    border: 2px solid #007bff; 
-    background: #e3f2fd; 
 }
 
 .admins-modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.5);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    background-color: rgba(1, 1, 1, 0.5);
+    backdrop-filter: blur(4px);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 20000;
+    width: 100%;
+    height: 100%;
+    transition: 0.3s;
 }
 
 .admins-modal-content {
-    background: white;
     padding: 30px;
-    border-radius: 10px;
-    min-width: 300px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
 }
 
 .admins-input-field {
+  box-shadow: none;
+    outline: none;
     width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    font-size: 14px;
-}
 
+    margin: 10px 0;
+    border-bottom: 1px dashed red;
+    border-top: none;
+    border-left: none;
+    border-right: none;
+    background: none;
+    color: red;
+    font-size: 14px;
+    font-family: "midnight";
+    height: 50px;
+}
+.admins-input-field::placeholder{
+  color: red;
+  font-family: "midnight";
+  opacity: 0.6;
+}
 .admins-btn {
     padding: 10px 16px;
     border: none;
-    border-radius: 5px;
     cursor: pointer;
-    margin: 5px;
     font-size: 14px;
     transition: background 0.3s ease;
 }
 
 .admins-btn-primary { 
-    background: #007bff; 
-    color: white; 
+  color: red;
+  border: 1px solid red;
+  background: none;
+  font-family: 'Midnight';
+  background-color: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(5px);
+  height: 50px;
 }
-.admins-btn-primary:hover { background: #0056b3; }
-
 .admins-btn-success { 
-    background: #28a745; 
-    color: white; 
+  border: 1px solid red;
+  color: red; 
+  background: none;
+  font-family: 'Midnight';
 }
-.admins-btn-success:hover { background: #1e7e34; }
-
 .admins-btn-danger { 
-    background: #dc3545; 
-    color: white; 
+  border: 1px solid red;
+  color: red; 
+  background: none;
+  font-family: 'Midnight';
 }
-.admins-btn-danger:hover { background: #c82333; }
-
+.admins-panel-header h3{
+  color: red;
+  font-weight: 100;
+}
 .admins-btn-secondary { 
-    background: #6c757d; 
-    color: white; 
+  border: 1px solid red;
+  color: red; 
+  background: none;
+    font-family: 'Midnight';
+          background-color: rgba(0, 0, 0, 0.2);
+    backdrop-filter: blur(5px);
+    height: 50px;
 }
-.admins-btn-secondary:hover { background: #545b62; }
 
 .admins-status { 
     margin-top: 12px; 
-    font-size: 13px; 
+    font-size: 14px; 
     text-align: center; 
     padding: 8px;
-    border-radius: 4px;
+    color: red;
 }
 
 .admins-success { 
-    color: #155724; 
-    background: #d4edda;
-    border: 1px solid #c3e6cb;
+  color: red;
+    border:1px solid red;
 }
 
 .admins-error { 
-    color: #721c24; 
-    background: #f8d7da;
-    border: 1px solid #f5c6cb;
-}
-
-.admins-info { 
-    color: #004085; 
-    background: #cce5ff;
-    border: 1px solid #b3d7ff;
+  color: red;
+    border:1px solid red;
 }
 
 .admins-controls {
@@ -1285,7 +1293,7 @@ border: 2px solid red
     align-items: center;
     margin-bottom: 15px;
     padding-bottom: 10px;
-    border-bottom: 1px solid #eee;
+    border-bottom: 1px solid red;
 }
 @keyframes fadeIn {
     from { opacity: 0; transform: translateX(10px); }
