@@ -126,24 +126,45 @@ async function checkPassword(password) {
 
 // Включение/выключение режима редактирования
 function toggleEditMode(enable) {
+    // Находим ВСЕ элементы с data-content-key
     const elements = document.querySelectorAll('[data-content-key]');
+    
+    console.log(`Найдено ${elements.length} элементов для редактирования`);
     
     elements.forEach(element => {
         element.contentEditable = enable;
         if (enable) {
             element.classList.add('admins-editable');
+            // Добавляем стили для кнопок
+            if (element.tagName === 'BUTTON') {
+                element.style.border = '1px dashed #007bff';
+                element.style.background = '#f8f9fa';
+            }
         } else {
             element.classList.remove('admins-editable');
+            // Убираем стили с кнопок
+            if (element.tagName === 'BUTTON') {
+                element.style.border = '';
+                element.style.background = '';
+            }
         }
     });
     
     if (enable) {
         document.getElementById('adminPanel').classList.remove('admins-hidden');
-        document.getElementById('adminLoginBtn').style.display = 'none';
+        // Скрываем все кнопки входа для админов
+        const adminLoginBtns = document.querySelectorAll('#adminLoginBtn');
+        adminLoginBtns.forEach(btn => {
+            btn.style.display = 'none';
+        });
         showStatus('Режим редактирования активен', 'info');
     } else {
         document.getElementById('adminPanel').classList.add('admins-hidden');
-        document.getElementById('adminLoginBtn').style.display = 'block';
+        // Показываем все кнопки входа для админов
+        const adminLoginBtns = document.querySelectorAll('#adminLoginBtn');
+        adminLoginBtns.forEach(btn => {
+            btn.style.display = 'block';
+        });
         showStatus('Режим редактирования выключен', 'info');
     }
 }
