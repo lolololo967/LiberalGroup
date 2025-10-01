@@ -1,5 +1,11 @@
 {
-  "name": "my-admin-site",
+  "name": "liberal-group",
   "version": "1.0.0",
-  "type": "module"
+  "description": "Liberal Group Website",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.38.0"
+  },
+  "scripts": {
+    "dev": "vercel dev"
+  }
 }
