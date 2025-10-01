@@ -113,7 +113,7 @@ async function checkPassword(password) {
         const hashArray = Array.from(new Uint8Array(hashBuffer));
         const hashedPassword = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
         
-        const correctHash = '240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9';
+        const correctHash = 'f4f8666a93b223240062cf40d08e0bad551dd2e30bfef80d3fcc3f969aae1218';
         
         return hashedPassword === correctHash;
     } catch (error) {
@@ -278,3 +278,4 @@ document.addEventListener('DOMContentLoaded', function() {
         )
         .subscribe();
 });
+
