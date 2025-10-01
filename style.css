@@ -1138,133 +1138,155 @@ border: 2px solid red
     font-family: 'Midnight', sans-serif;
     text-align: right;
 }
-        .admins-hidden { display: none !important; }
-        
-        .admins-admin-btn { 
-            position: fixed; 
-            top: 20px; 
-            right: 20px; 
-            padding: 10px 20px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            z-index: 1000;
-        }
-        
-        .admins-admin-panel { 
-            position: fixed; 
-            top: 70px; 
-            right: 20px; 
-            background: white;
-            padding: 20px;
-            border: 2px solid #007bff;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            z-index: 999;
-            min-width: 250px;
-        }
-        
-        .admins-editable[contenteditable="true"] { 
-            border: 2px dashed #007bff; 
-            padding: 8px; 
-            margin: 4px;
-            background: #f8f9fa;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-        }
-        
-        .admins-editable[contenteditable="true"]:focus { 
-            outline: none; 
-            border: 2px solid #007bff; 
-            background: #e3f2fd; 
-        }
-        
-        .admins-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2000;
-        }
-        
-        .admins-modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            min-width: 300px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-        }
-        
-        .admins-input-field {
-            width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-        
-        .admins-btn {
-            padding: 10px 16px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin: 5px;
-            font-size: 14px;
-            transition: background 0.3s ease;
-        }
-        
-        .admins-btn-primary { 
-            background: #007bff; 
-            color: white; 
-        }
-        .admins-btn-primary:hover { background: #0056b3; }
-        
-        .admins-btn-success { 
-            background: #28a745; 
-            color: white; 
-        }
-        .admins-btn-success:hover { background: #1e7e34; }
-        
-        .admins-btn-danger { 
-            background: #dc3545; 
-            color: white; 
-        }
-        .admins-btn-danger:hover { background: #c82333; }
-        
-        .admins-btn-secondary { 
-            background: #6c757d; 
-            color: white; 
-        }
-        .admins-btn-secondary:hover { background: #545b62; }
-        
-        .admins-status { 
-            margin-top: 12px; 
-            font-size: 13px; 
-            text-align: center; 
-            padding: 8px;
-            border-radius: 4px;
-        }
-        
-        .admins-success { 
-            color: #155724; 
-            background: #d4edda;
-            border: 1px solid #c3e6cb;
-        }
-        
-        .admins-error { 
-            color: #721c24; 
-            background: #f8d7da;
-            border: 1px solid #f5c6cb;
-        }
+     /* Стили админ-панели */
+.admins-hidden { display: none !important; }
+
+.admins-admin-btn { 
+    position: fixed; 
+    top: 20px; 
+    right: 20px; 
+    padding: 10px 20px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    z-index: 10000;
+}
+
+.admins-admin-panel { 
+    position: fixed; 
+    top: 70px; 
+    right: 20px; 
+    background: white;
+    padding: 20px;
+    border: 2px solid #007bff;
+    border-radius: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    z-index: 9999;
+    min-width: 250px;
+}
+
+.admins-editable[contenteditable="true"] { 
+    border: 2px dashed #007bff; 
+    padding: 8px; 
+    margin: 4px;
+    background: #f8f9fa;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+}
+
+.admins-editable[contenteditable="true"]:focus { 
+    outline: none; 
+    border: 2px solid #007bff; 
+    background: #e3f2fd; 
+}
+
+.admins-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 20000;
+}
+
+.admins-modal-content {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    min-width: 300px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+}
+
+.admins-input-field {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+.admins-btn {
+    padding: 10px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin: 5px;
+    font-size: 14px;
+    transition: background 0.3s ease;
+}
+
+.admins-btn-primary { 
+    background: #007bff; 
+    color: white; 
+}
+.admins-btn-primary:hover { background: #0056b3; }
+
+.admins-btn-success { 
+    background: #28a745; 
+    color: white; 
+}
+.admins-btn-success:hover { background: #1e7e34; }
+
+.admins-btn-danger { 
+    background: #dc3545; 
+    color: white; 
+}
+.admins-btn-danger:hover { background: #c82333; }
+
+.admins-btn-secondary { 
+    background: #6c757d; 
+    color: white; 
+}
+.admins-btn-secondary:hover { background: #545b62; }
+
+.admins-status { 
+    margin-top: 12px; 
+    font-size: 13px; 
+    text-align: center; 
+    padding: 8px;
+    border-radius: 4px;
+}
+
+.admins-success { 
+    color: #155724; 
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+}
+
+.admins-error { 
+    color: #721c24; 
+    background: #f8d7da;
+    border: 1px solid #f5c6cb;
+}
+
+.admins-info { 
+    color: #004085; 
+    background: #cce5ff;
+    border: 1px solid #b3d7ff;
+}
+
+.admins-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.admins-panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
+}
 @keyframes fadeIn {
     from { opacity: 0; transform: translateX(10px); }
     to { opacity: 1; transform: translateX(0); }
