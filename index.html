@@ -44,7 +44,8 @@
 <!-- Supabase CDN -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.27.0/dist/supabase.min.js"></script>
 <script>
-  const supabase = supabase.createClient(
+  // Переименовали переменную, чтобы не было конфликта с глобальным supabase
+  const supabaseClient = supabase.createClient(
     "https://pwawgeyxzjntystktciz.supabase.co",
     "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3YXdnZXl4empudHlzdGt0Y2l6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzMjU2NTQsImV4cCI6MjA3NDkwMTY1NH0.nS4TpZT7hq1PW4lLUiDccUmJSobnXWm1GFTWskYy8jI"
   );
@@ -53,7 +54,7 @@
 
   // Загружаем опубликованные тексты на страницу
   async function loadContent() {
-    const { data, error } = await supabase.from("content").select("*");
+    const { data, error } = await supabaseClient.from("content").select("*");
     if(error) { console.error(error); return; }
     data.forEach(item => {
       const el = document.querySelector(`[data-key="${item.key}"]`);
@@ -70,7 +71,7 @@
 
     if(!email || !password) return alert("Email и пароль обязательны");
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
 
     if(error) return alert("Ошибка входа: " + error.message);
 
@@ -85,7 +86,7 @@
 
   // Загружаем черновики для редактирования
   async function loadDrafts() {
-    const { data, error } = await supabase.from("content").select("*");
+    const { data, error } = await supabaseClient.from("content").select("*");
     if(error) { console.error(error); return; }
 
     const container = document.getElementById("texts");
@@ -104,7 +105,7 @@
     for(const input of inputs) {
       const key = input.dataset.key;
       const value = input.value;
-      await supabase.from("content").upsert({ key, draft_text: value, last_edited_by: currentUser.id });
+      await supabaseClient.from("content").upsert({ key, draft_text: value, last_edited_by: currentUser.id });
     }
 
     alert("Все изменения опубликованы!");
