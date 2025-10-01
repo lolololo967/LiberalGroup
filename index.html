@@ -4,27 +4,9 @@
 <meta charset="UTF-8">
 <title>Liberal Group</title>
 <style>
-  #adminLogin {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    padding: 8px 12px;
-    background-color: #6c5ce7;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-  }
-  #adminPanel {
-    display: none;
-    margin-top: 20px;
-    padding: 10px;
-    border: 2px solid #6c5ce7;
-    border-radius: 6px;
-  }
-  #adminPanel input {
-    margin: 5px 0;
-  }
+  #adminLogin { position: fixed; top:10px; right:10px; padding:8px 12px; background:#6c5ce7; color:white; border:none; border-radius:6px; cursor:pointer; }
+  #adminPanel { display:none; margin-top:20px; padding:10px; border:2px solid #6c5ce7; border-radius:6px; }
+  #adminPanel input { margin:5px 0; }
 </style>
 </head>
 <body>
@@ -40,16 +22,16 @@
   <button id="publishBtn">Опубликовать изменения</button>
 </div>
 
+<!-- Подключаем Supabase -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.27.0/dist/supabase.min.js"></script>
 <script>
-  // Создаём клиент **только после того, как CDN загрузился**
   window.addEventListener('DOMContentLoaded', () => {
-    const supabaseClient = supabase.createClient(
-      "ВАШ_SUPABASE_URL",
-      "ВАШ_SUPABASE_ANON_KEY"
+    // Создаём клиент через window.Supabase
+    const supabaseClient = window.Supabase.createClient(
+      "https://pwawgeyxzjntystktciz.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3YXdnZXl4empudHlzdGt0Y2l6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzMjU2NTQsImV4cCI6MjA3NDkwMTY1NH0.nS4TpZT7hq1PW4lLUiDccUmJSobnXWm1GFTWskYy8jI"
     );
 
-    // Остальной код, который использует supabaseClient
     let currentUser = null;
 
     async function loadContent() {
@@ -63,13 +45,14 @@
 
     loadContent();
 
+    // Вход для админов
     document.getElementById("adminLogin").addEventListener("click", async () => {
-      const email = prompt("Email");
-      const password = prompt("Пароль");
-      if(!email || !password) return alert("Обязательно email и пароль");
+      const email = prompt("Введите email администратора");
+      const password = prompt("Введите пароль");
+      if(!email || !password) return alert("Email и пароль обязательны");
 
       const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-      if(error) return alert(error.message);
+      if(error) return alert("Ошибка входа: " + error.message);
 
       currentUser = data.user;
       document.getElementById("adminPanel").style.display = "block";
@@ -89,6 +72,7 @@
       });
     }
 
+    // Публикация изменений
     document.getElementById("publishBtn").addEventListener("click", async () => {
       const inputs = document.querySelectorAll("#texts input");
       for(const input of inputs){
@@ -99,7 +83,5 @@
     });
   });
 </script>
-
-
 </body>
 </html>
