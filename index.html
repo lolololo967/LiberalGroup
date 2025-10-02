@@ -1,0 +1,1176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LIBERAL GROUP</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" href="images/Site-avatar.png">
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+
+</head>
+<body id="body">
+    <div class="nav-container">
+            <div class="nav-buttons">
+                <button data-content-key="nav_constitution">Конституция</button>
+                <button data-content-key="nav_info">Информация</button>
+                <button data-content-key="nav_parliament">Парламент</button>
+                <button data-content-key="nav_main">Главная</button>
+                <button data-content-key="nav_projects">ИИ помощник</button>
+                <button data-content-key="nav_parties">Партии</button>
+                <button data-content-key="nav_developers">Разработчики</button>
+            </div>
+        </div>
+    <div class="modals-wrapper">
+        <div class="modal" data-modal="Конституция">
+            <div class="modal__square-wrapper">
+                <a href="files/Конституция Либеральной Группы (ЛГ).pdf" 
+                class="modal__square-link" 
+                download>
+                    <div class="square-front">
+                        <p class="kon">Конституция</p>
+                        <span class="tooltip-kon">Нажмите чтобы скачать</span>
+                    </div>
+                    <div class="square-back">
+                        <p class="kon">Конституция</p>
+                        <span class="tooltip-kon">Нажмите чтобы скачать</span>
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="modal" data-modal="Информация">
+            <h2 class="modal-title" data-content-key="info_title">Информация</h2>
+            <div class="centered-circle">
+                <div class="circle-part part1"></div>
+                <div class="circle-part part2"></div>
+                <div class="circle-part part3"></div>
+                <div class="triangle"></div>
+            </div>
+    
+            <div class="hover-info" id="info-part1" data-content-key="info_tutorials">Туториалы</div>
+            <div class="hover-info" id="info-part2" data-content-key="info_reputation">Репутации</div>
+            <div class="hover-info" id="info-part3" data-content-key="info_roles">Роли</div>
+        </div>
+
+
+        <div class="modal" data-modal="Активность">
+            <button class="modal-button modal-back">Назад</button>
+            <h2 class="modal-title">Активность</h2>
+            <div class="modal-underline"></div>
+        </div>
+
+        <div class="modal" data-modal="Репутация">
+            <button class="modal-button modal-back">Назад</button>
+            <h2 class="modal-title">Репутация</h2>
+            <div class="modal-underline"></div>
+           
+        </div>
+
+        <div class="modal" data-modal="Роли">
+            <button class="modal-button modal-back">Назад</button>
+            <h2 class="modal-title" data-content-key="roles_title">Роли</h2>
+            <div class="modal-underline"></div>
+            <div class="roles-container">
+                <h2 class="modal-title title-role" data-content-key="main_roles_title">Основные роли</h2>
+                <div class="main-roles-buttons">
+                    <button data-role="Политические роли" data-content-key="political_roles_btn">Политические роли</button>
+                    <button data-role="Роли за актив" data-content-key="activity_roles_btn">Роли за актив</button>
+                    <button data-role="Роли за репутацию" data-content-key="reputation_roles_btn">Роли за репутацию</button>
+                </div>
+                <hr class="game-roles-line" />
+                <h2 class="modal-title title-role" data-content-key="game_roles_title">Игровые роли</h2>
+                <div class="game-roles-buttons">
+                    <button data-role="Hearts Of Iron 4" data-content-key="hoi4_btn">Hearts Of Iron 4</button>
+                    <button data-role="StandOff 2" data-content-key="standoff2_btn">StandOff 2</button>
+                    <button data-role="CS 2" data-content-key="cs2_btn">Сounter Strike 2</button>
+                    <button data-role="SCP: Secret Laboratory" data-content-key="scp:sl_btn">SCP: Secret Laboratory</button>
+                    <button data-role="Deceit" data-content-key="Deceit_btn">Deceit</button>
+                    <button data-role="War Thunder" data-content-key="WarThunder_btn">War Thunder</button>
+                    <button data-role="PUBG" data-content-key="PUBG_btn">PUBG</button>
+                    <button data-role="Titanfall 2" data-content-key="Titanfall2_btn">Titanfall 2</button>
+                    <button data-role="Factorio" data-content-key="Factorio_btn">Factorio</button>
+                    <button data-role="War Selection" data-content-key="WarSelection_btn">War Selection</button>
+                    <button data-role="Terraria" data-content-key="Terraria_btn">Terraria</button>
+                </div>
+            </div>
+        </div>
+        <div class="modal" data-modal="Политические роли">
+            <button class="modal-button modal-back">Назад</button>
+            <h2 class="modal-title" data-content-key="political_roles_title">Политические роли</h2>
+            <div class="modal-underline"></div>
+            <div class="pol-dop">
+                <div class="polit-con">
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #4a8fcc 0%, rgba(74,143,204,0.5) 40%, rgba(255,255,255,0) 100%)">
+                            <span data-content-key="role_member">Участник</span>
+                        </div>
+                        <div class="role-right-pol" data-content-key="role_member_desc">
+                            человек, прошедший пробный срок и ставший частью ЛГ.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #cc5cc8 0%, rgba(204,92,200,0.5) 40%, rgba(255,255,255,0) 100%)">
+                            <span data-content-key="role_term">Пробный Срок</span>
+                        </div>
+                        <div class="role-right-pol" data-content-key="role_term_desc">
+                            человек, который только прибыл в группу и должен показать, что он активен и достоин стать частью ЛГ.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #835ccc 0%, rgba(55,0,194,0.5) 40%, rgba(255,255,255,0) 100%)">
+                            <span data-content-key="role_LiberalElit">Либеральная Элита</span>
+                        </div>
+                        <div class="role-right-pol" data-content-key="role_LiberalElit_desc">
+                            участники, которые полностью лояльны группе и заслужили звание элиты за свой стаж в ЛГ.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #ccaa29 0%, rgba(204,170,41,0.5) 40%, rgba(255,255,255,0) 100%)">
+                            <span data-content-key="role_leader">Лидер</span>
+                        </div>
+                        <div class="role-right-pol" data-content-key="role_leader_desc">
+                            нынешний лидер ЛГ, который отвечает за актив внутри ЛГ, а также за добавление новых возможностей и ролей.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #6800b3 0%, rgba(94,0,161,0.5) 40%, rgba(255,255,255,0) 100%)">
+                            <span data-content-key="role_primearMinistr">Премьер Министр</span>
+                        </div>
+                        <div class="role-right-pol" data-content-key="role_primearMinistr_desc">
+                            участник парламента, выбранный другими участниками парламента, отвечающий за политическую часть ЛГ.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #8a00cf 0%, rgba(129,0,194,0.5) 40%, rgba(255,255,255,0) 100%)">
+                            <span data-content-key="role_parlamentMember">Представитель Парламента</span>
+                        </div>
+                        <div class="role-right-pol" data-content-key="role_parlamentMember_desc">
+                            участники которые состоят в парламенте. Они выбирают Премьер Министра и выполняют задачи законодательной власти.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #49626d 0%, rgba(73,98,109,0.5) 40%, rgba(255,255,255,0) 100%)">
+                            <span data-content-key="role_Agent">Агент Б.Б.Л.Г</span>
+                        </div>
+                        <div class="role-right-pol" data-content-key="role_Agent_desc">
+                            участники, соблюдающие порядок внутри ЛГ, предотвращающие нарушение правил. Агенты ВБЛГ имеют модераторские права в ЛГ.
+                        </div>
+                    </div>
+                    <div class="role-row-pol" >
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #49626d 0%, rgba(73,98,109,0.5) 40%, rgba(255,255,255,0) 100%)">
+                            <span data-content-key="role_AgentVn">Агент Вн.Б.Л.Г</span>
+                        </div>
+                        <div class="role-right-pol" data-content-key="role_AgentVn_desc">
+                            участники, которые предотвращают попадание внешних угроз с враждебных групп внутрь ЛГ.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #4a8fcc 0%, rgba(74,143,204,0.5) 40%, rgba(255,255,255,0) 100%)">
+                            <span data-content-key="role_Vip">VIP Премиальный Участник</span>
+                        </div>
+                        <div class="role-right-pol" data-content-key="role_Vip_desc">
+                            роли, выдающиеся за буст сервера, дающие возможность писать в новости.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="modal" data-modal="Роли за актив">
+            <button class="modal-button modal-back" data-content-key="back_btn">Назад</button>
+            <h2 class="modal-title" data-content-key="roleforactive">Роли за актив</h2>
+            <div class="modal-underline"></div>
+            <div class="activity-points-firts">
+                <div class="activity-points">
+                    <div data-level="0" data-label="Мертв (ничего не делает в группе)" data-content-key="dead_member">act -0</div>
+                    <div data-level="1" data-label="Ужасный Актив (ставит реакции или голосует)" data-content-key="terrible_active">act +1</div>
+                    <div data-level="2" data-label="Низкий Актив (иногда пишет в чатах)" data-content-key="low_active">act +2</div>
+                    <div data-level="3" data-label="Не особый Актив (ранее был на уровне 0–2, находится в группе менее часа)" data-content-key="weak_active">act +3</div>
+                    <div data-level="4" data-label="Нормальный Актив (ранее был на уровне 0–3, находится в группе не менее 1 часа)" data-content-key="normal_active">act +4</div>
+                    <div data-level="5" data-label="Хороший Актив (имеет Актив 4 и находится в группе не менее 2 часов)" data-content-key="good_active">act +5</div>
+                    <div data-level="6" data-label="Высокий Актив (имеет Актив 5 и находится в группе не менее 2 часов)" data-content-key="high_active">act +6</div>
+                    <div data-level="7" data-label="Отличный Актив (имеет Актив 6 и находится в группе не менее 3 часов)" data-content-key="excellent_active">act +7</div>
+                    <div data-level="8" data-label="Очень Хороший Актив (имеет Актив 7 и находится в группе не менее 3 часов)" data-content-key="very_good_active">act +8</div>
+                    <div data-level="9" data-label="Крайне Высокий Актив (имеет Актив 8 и находится в группе не менее 4 часов)" data-content-key="extremely_high_active">act +9</div>
+                    <div data-level="10" data-label="Превосходный Актив (имеет Актив 9 и находится в группе не менее 4 часов)" data-content-key="superb_active">act +10</div>
+                </div>
+
+                <div class="activity-tooltip" id="activity-tooltip"></div>
+
+                <div class="activity-bar">
+                    <div class="activity-fill"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" data-modal="Роли за репутацию">
+            <button class="modal-button modal-back">Назад</button>
+            <h2 class="modal-title" data-content-key="roleforreputation">Роли за репутацию</h2>
+            <div class="reputation-section-first">
+                <section class="reputation-section">
+                    <h3 data-content-key="own_reputation_title">Своя Репутация <small data-content-key="own_reputation_subtitle">(Зависит от вашего уровне активности)</small></h3>
+                    <table class="reputation-table">
+                        <thead>
+                            <tr>
+                                <th class="left-col" data-content-key="activity_level_header">Уровень активности</th>
+                                <th class="right-col" data-content-key="max_reputation_change_header">Максимальное изменение репутации</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="left-col" data-content-key="active_3_or_less">Актив 3 и ниже</td><td class="right-col" data-content-key="max_1_point">Максимально на 1</td></tr>
+                            <tr><td class="left-col" data-content-key="active_4_to_6">Актив 4 - 6</td><td class="right-col" data-content-key="max_2_points">Максимально на 2</td></tr>
+                            <tr><td class="left-col" data-content-key="active_7_to_8">Актив 7 - 8</td><td class="right-col" data-content-key="max_3_points">Максимально на 3</td></tr>
+                            <tr><td class="left-col" data-content-key="active_9">Актив 9</td><td class="right-col" data-content-key="max_4_points">Максимально на 4</td></tr>
+                            <tr><td class="left-col" data-content-key="active_10">Актив 10</td><td class="right-col" data-content-key="unlimited_points">Неограниченно</td></tr>
+                        </tbody>
+                    </table>
+                </section>
+
+                <section class="reputation-section">
+                    <h3 data-content-key="others_reputation_title">Чужая Репутация <small data-content-key="others_reputation_subtitle">(Зависит от вашей текущей репутации)</small></h3>
+                    <table class="reputation-table">
+                        <thead>
+                            <tr>
+                                <th class="left-col" data-content-key="your_reputation_header">Ваша репутация</th>
+                                <th class="right-col" data-content-key="max_others_reputation_change_header">Максимальное изменение чужой репутации</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td class="left-col" data-content-key="reputation_minus_2_or_less">-2 и ниже</td><td class="right-col" data-content-key="max_1_point_others">Максимально на 1</td></tr>
+                            <tr><td class="left-col" data-content-key="reputation_minus_1_to_plus_1">От -1 до +1</td><td class="right-col" data-content-key="max_2_points_others">Максимально на 2</td></tr>
+                            <tr><td class="left-col" data-content-key="reputation_plus_2">+2</td><td class="right-col" data-content-key="max_3_points_others">Максимально на 3</td></tr>
+                            <tr><td class="left-col" data-content-key="reputation_plus_3">+3</td><td class="right-col" data-content-key="max_4_points_others">Максимально на 4</td></tr>
+                            <tr><td class="left-col" data-content-key="reputation_plus_4">+4</td><td class="right-col" data-content-key="max_7_points_others">Максимально на 7</td></tr>
+                            <tr><td class="left-col" data-content-key="reputation_plus_5">+5</td><td class="right-col" data-content-key="unlimited_points_others">Неограниченно</td></tr>
+                        </tbody>
+                    </table>
+                </section>
+            </div>
+            <div class="modal-underline"></div>
+        </div>
+
+        <div class="modal" data-modal="Hearts Of Iron 4">
+            <button class="modal-button modal-back">Назад</button>
+            <h2 class="modal-title">Hearts Of Iron 4</h2>
+            <div class="modal-underline"></div>
+            <div class="pol-dop">
+                <div class="polit-con">
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #1f4d1f 0%, rgba(31,77,31,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>HOI4 - Студент</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Только начал играть, и учиться как и что делать.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #1f4d1f 0%, rgba(31,77,31,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>HOI4 - Штатский</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Играет но плохо, в основном на сложности "Штатский".
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #1f4d1f 0%, rgba(31,77,31,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>HOI4 - Начальный Политик</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Уже играет на "Рядовой", но пытается играть еще на "Сержант".
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #1f4d1f 0%, rgba(31,77,31,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>HOI4 - Опытный Политик</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Играет на "Сержант" легко и знает как обыграть сильнейшее государство.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #1f4d1f 0%, rgba(31,77,31,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>HOI4 - Вице Политический Комиссар</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Легко играет на "Сержант", без читов, пробует "Офицер".
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #1f4d1f 0%, rgba(31,77,31,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>HOI4 - Политический Комиссар</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Играет на "Офицер" и "Элита", но с трудностями.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #1f4d1f 0%, rgba(31,77,31,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>HOI4 - Дипломатический Специалист</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Играет на "Элита" как на "Штатский", может за Австрию победить усиленную Германию в Ironman.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="modal" data-modal="StandOff 2">
+            <button class="modal-button modal-back">Назад</button>
+            <h2 class="modal-title">StandOff 2</h2>
+            <div class="modal-underline"></div>
+            <div class="pol-dop-standoff">
+                <div class="polit-con">
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #1f6d6d 0%, rgba(31,109,109,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>ST.off2 - Рекрут</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Бронза 1-4
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #1f6d6d 0%, rgba(31,109,109,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>ST.off2 - Рядовой</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Сильвер 1-3
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #1f6d6d 0%, rgba(31,109,109,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>ST.off2 - Капрал</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Сильвер 4
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #1f6d6d 0%, rgba(31,109,109,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>ST.off2 - Старшина</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Голд 1
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #1f6d6d 0%, rgba(31,109,109,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>ST.off2 - Сержант</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Голд 2-3
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #1f6d6d 0%, rgba(31,109,109,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>ST.off2 - Старший Сержант</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Голд 4
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #1f6d6d 0%, rgba(31,109,109,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>ST.off2 - Лейтенант</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Феникс
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #1f6d6d 0%, rgba(31,109,109,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>ST.off2 - Капитан Лейтенант</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Ренджер
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #1f6d6d 0%, rgba(31,109,109,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>ST.off2 - Майор</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Чемпион
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #1f6d6d 0%, rgba(31,109,109,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>ST.off2 - Заместитель Полководца</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Мастер
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #1f6d6d 0%, rgba(31,109,109,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>ST.off2 - Полководец</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Элита
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #1f6d6d 0%, rgba(31,109,109,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>ST.off2 - Генеральный Полководец</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Легенда
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal" data-modal="CS 2">
+            <button class="modal-button modal-back">Назад</button>
+            <h2 class="modal-title">Counter Strike 2</h2>
+            <div class="modal-underline"></div>
+            <div class="pol-dop">
+                <div class="polit-con">
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #8b3a0e 0%, rgba(139,58,14,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>CS2 - Новичок</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Начало тяжелого пути..
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #8b3a0e 0%, rgba(139,58,14,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>CS2 - Ученик</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Ты начал поднимать свой скил.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #8b3a0e 0%, rgba(139,58,14,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>CS2 - Опытный</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Это базовое звание, но сможешь ли ты его получить?
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #8b3a0e 0%, rgba(139,58,14,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>CS2 - Специалист</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Умение кидать гранаты и хорошо стрелять — это и есть спец!
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #8b3a0e 0%, rgba(139,58,14,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>CS2 - Ветеран</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Знание карт, нормальный аим и хорошая командная работа...
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #8b3a0e 0%, rgba(139,58,14,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>CS2 - Мастер</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Скоро... уже очень скоро ты будешь профи..
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #8b3a0e 0%, rgba(139,58,14,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>CS2 - Эксперт</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Никогда не говори "никогда", когда идешь к своей цели!
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #8b3a0e 0%, rgba(139,58,14,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>CS2 - Высший Эксперт</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Отличные тактики, знание позиций, отличный аим — вот и награда.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #8b3a0e 0%, rgba(139,58,14,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>CS2 - Элита</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Прайм, высокий ранг, отличный аим, хорошие раскидки, знание карт... Последняя ступенька перед концом.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #8b3a0e 0%, rgba(139,58,14,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>CS2 - Мировой чемпион</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Цель... Это было всё, что перед тобой стояло. Теперь ты профессиональный игрок. Конец пути, перед тобой свобода.
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="modal" data-modal="SCP: Secret Laboratory">
+            <button class="modal-button modal-back">Назад</button>
+            <h2 class="modal-title">SCP: Secret Laboratory</h2>
+            <div class="modal-underline"></div>
+            <div class="pol-dop-scp">
+                <div class="polit-con">
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #2e2e2e 0%, rgba(46,46,46,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>SCP.sl - Новичок</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Это игрок, который только начинает свой путь. Не знает механики игры и не имеет опыта в выживании.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #2e2e2e 0%, rgba(46,46,46,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>SCP.sl - Рядовой</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Более опытный игрок, знакомый с основными механиками, действует эффективнее в условиях SCP.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #2e2e2e 0%, rgba(46,46,46,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>SCP.sl - Опытный</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Провел достаточно времени в игре, улучшил навыки и стратегии, понимает особенности SCP и объектов.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #2e2e2e 0%, rgba(46,46,46,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>SCP.sl - Элита</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Выдающиеся навыки и знания игры, лидеры команды, координируют действия других игроков.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #2e2e2e 0%, rgba(46,46,46,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>SCP.sl - Специалист</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Обладает углубленными знаниями SCP, объектов и механик. Ключевой игрок в сложных задачах и стратегии.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #2e2e2e 0%, rgba(46,46,46,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>SCP.sl - Командир</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Лидерские качества, эффективно управляет командой в кризисе, принимает быстрые и верные решения.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #2e2e2e 0%, rgba(46,46,46,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>SCP.sl - Эксперт</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Сталкивался с множеством ситуаций, умеет приспосабливаться. Эффективен как SCP и как персонал.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #2e2e2e 0%, rgba(46,46,46,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>SCP.sl - Мастер</span>
+                        </div>
+                        <div class="role-right-pol">
+                            В совершенстве владеет аспектами игры. Опасен как SCP и незаменимый союзник для персонала.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #2e2e2e 0%, rgba(46,46,46,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>SCP.sl - Ветеран</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Много времени в игре, обширный опыт. Надежный лидер и союзник в любых ситуациях.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #2e2e2e 0%, rgba(46,46,46,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>SCP.sl - Легенда</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Заслужил уважение и признание. Символ опыта и мастерства, вдохновляет других игроков.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #2e2e2e 0%, rgba(46,46,46,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>SCP.sl - Знаток</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Давно играет и стал символом стабильности и опыта. Его советы помогают другим достигать успеха.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal" data-modal="Deceit">
+            <button class="modal-button modal-back">Назад</button>
+            <h2 class="modal-title">Deceit</h2>
+            <div class="modal-underline"></div>
+            <div class="pol-dop">
+                <div class="polit-con">
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #36d1c4 0%, rgba(54,209,196,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>Deceit - Вирусный Властелин</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Мастер обмана и отличный детектив одновременно!
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #36d1c4 0%, rgba(54,209,196,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>Deceit - Суперзараженный</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Профессионал в обмане и очень догадливый.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #36d1c4 0%, rgba(54,209,196,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>Deceit - Зараженный-Мутант</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Хороший игрок с большим опытом игры.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #36d1c4 0%, rgba(54,209,196,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>Deceit - Распространитель Вируса</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Умеет обмануть и понимает, как вычислять предателей.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #36d1c4 0%, rgba(54,209,196,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>Deceit - Зараженный-носитель</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Более опытный игрок, который умеет обманывать, но не всегда удачно.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #36d1c4 0%, rgba(54,209,196,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>Deceit - Инфицированный</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Рассвет скила. Опытный новичок.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #36d1c4 0%, rgba(54,209,196,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>Deceit - Невиновный</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Новичок в игре, только разбирается, как играть и обманывать.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" data-modal="War Thunder">
+            <button class="modal-button modal-back">Назад</button>
+            <h2 class="modal-title">War Thunder</h2>
+            <div class="modal-underline"></div>
+            <div class="pol-dop">
+                <div class="polit-con">
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #8b0000 0%, rgba(139,0,0,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>WT - Cadet</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Начинающий пилот или танкист.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #8b0000 0%, rgba(139,0,0,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>WT - Sergeant</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Опытный игрок, хорошо освоивший основы.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #8b0000 0%, rgba(139,0,0,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>WT - Captain</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Продвинутый игрок, который активно участвует в боях.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #8b0000 0%, rgba(139,0,0,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>WT - Marshal</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Эксперт, один из лучших игроков.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" data-modal="PUBG">
+            <button class="modal-button modal-back">Назад</button>
+            <h2 class="modal-title">PUBG</h2>
+            <div class="modal-underline"></div>
+            <div class="pol-dop">
+                <div class="polit-con">
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #fff176 0%, rgba(255,241,118,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>PUBG - Recruit</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Новичок, только начинающий своё путешествие.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #fff176 0%, rgba(255,241,118,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>PUBG - Scout</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Игрок с некоторым опытом, знает основы выживания.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #fff176 0%, rgba(255,241,118,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>PUBG - Mercenary</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Хорошо обученный боец, активно участвующий в боях.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #fff176 0%, rgba(255,241,118,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>PUBG - Veteran</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Опытный игрок, знающий все тонкости игры.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #fff176 0%, rgba(255,241,118,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>PUBG - Legend</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Мастер своего дела, один из лучших в игре.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" data-modal="Titanfall 2">
+            <button class="modal-button modal-back">Назад</button>
+            <h2 class="modal-title">Titanfall 2</h2>
+            <div class="modal-underline"></div>
+            <div class="pol-dop">
+                <div class="polit-con">
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #001f4d 0%, rgba(0,31,77,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>TitanFall2 - Initiate</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Новичок, только начинающий осваивать управление игры.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #001f4d 0%, rgba(0,31,77,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>TitanFall2 - Pilot</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Игрок, освоивший базовые навыки и титанов.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #001f4d 0%, rgba(0,31,77,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>TitanFall2 - Frontier Legend</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Опытный пилот, участвующий в серьёзных боях.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #001f4d 0%, rgba(0,31,77,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>TitanFall2 - Apex Predator</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Быстро передвигается, умеет профессионально пользоваться тактиками и титанами.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" data-modal="Factorio">
+            <button class="modal-button modal-back">Назад</button>
+            <h2 class="modal-title">Factorio</h2>
+            <div class="modal-underline"></div>
+            <div class="pol-dop">
+                <div class="polit-con">
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #7a5337 0%, rgba(122,83,55,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>Factorio - Apprentice Engineer</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Начинающий инженер, только освоивший основы.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #7a5337 0%, rgba(122,83,55,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>Factorio - Journeyman Engineer</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Игрок с некоторым опытом в автоматизации.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #7a5337 0%, rgba(122,83,55,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>Factorio - Senior Engineer</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Опытный инженер, умеющий создавать сложные системы.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #7a5337 0%, rgba(122,83,55,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>Factorio - Chief Engineer</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Эксперт, один из лучших инженеров.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="modal" data-modal="Factorio">
+            <button class="modal-button modal-back">Назад</button>
+            <h2 class="modal-title">Factorio</h2>
+            <div class="modal-underline"></div>
+            <div class="pol-dop">
+                <div class="polit-con">
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #7a5337 0%, rgba(122,83,55,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>Factorio - Apprentice Engineer</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Начинающий инженер, только освоивший основы.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #7a5337 0%, rgba(122,83,55,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>Factorio - Journeyman Engineer</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Игрок с некоторым опытом в автоматизации.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #7a5337 0%, rgba(122,83,55,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>Factorio - Senior Engineer</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Опытный инженер, умеющий создавать сложные системы.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #7a5337 0%, rgba(122,83,55,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>Factorio - Chief Engineer</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Эксперт, один из лучших инженеров.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+         <div class="modal" data-modal="War Selection">
+            <button class="modal-button modal-back">Назад</button>
+            <h2 class="modal-title">War Selection</h2>
+            <div class="modal-underline"></div>
+            <div class="pol-dop">
+                <div class="polit-con">
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #8b0000 0%, rgba(139,0,0,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>WS - Rookie</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Только начинает играть.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #8b0000 0%, rgba(139,0,0,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>WS - Learner</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Может справляться с одиночными атаками, но ещё слабо понимает стратегию.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #8b0000 0%, rgba(139,0,0,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>WS - Tactician</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Умеет планировать оборону и делать контратаки.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #8b0000 0%, rgba(139,0,0,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>WS - Warrior</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Уверенно развивает экономику, военные силы и эффективно комбинирует виды войск.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #8b0000 0%, rgba(139,0,0,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>WS - Diplomat</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Гибко реагирует на изменения ситуации, осознанно использует осадную технику и дипломатические манёвры.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #8b0000 0%, rgba(139,0,0,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>WS - Warlord</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Использует нестандартные стратегии, предсказывает действия противника, превосходит врагов в экономике, стратегии и скорости управления армией.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal" data-modal="Terraria">
+            <button class="modal-button modal-back">Назад</button>
+            <h2 class="modal-title">Terraria</h2>
+            <div class="modal-underline"></div>
+            <div class="pol-dop">
+                <div class="polit-con">
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #2e8b57 0%, rgba(46,139,87,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>Terraria - Beginner</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Ты только начал осваиваться в игре.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #2e8b57 0%, rgba(46,139,87,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>Terraria - Advanced</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Ты уже знаешь что такое классы, но не знаешь множество механик.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #2e8b57 0%, rgba(46,139,87,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>Terraria - Knowledgeable</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Ты уже провёл на вики более 1 часа и знаешь большинство механик и крафтов.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #2e8b57 0%, rgba(46,139,87,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>Terraria - Specialist</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Ты знаешь связки аксессуаров, прошёл игру не один раз и начал узнавать что такое моды.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #2e8b57 0%, rgba(46,139,87,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>Terraria - Expert</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Ты уже проходишь игру налегке и начинаешь проходить с усложнениями.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #2e8b57 0%, rgba(46,139,87,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>Terraria - Master</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Ты уже проходил игру на легендарной сложности.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #2e8b57 0%, rgba(46,139,87,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>Terraria - Inadequate</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Ты прошёл Calamity на сложности "Месть".
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #2e8b57 0%, rgba(46,139,87,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>Terraria - Schizophrenic</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Ты прошёл Calamity Infrenum.
+                        </div>
+                    </div>
+                    <div class="role-row-pol">
+                        <div class="role-left-pol" style="--gradient: linear-gradient(90deg, #2e8b57 0%, rgba(46,139,87,0.6) 40%, rgba(255,255,255,0) 100%)">
+                            <span>Terraria - Self-Defense</span>
+                        </div>
+                        <div class="role-right-pol">
+                            Ты прошёл Fargosouls mod на сложности "Мазохист".
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="modal" data-modal="Парламент">
+            <h2 class="modal-title" data-content-key="Parlament">Парламент</h2>
+
+            <div class="label-left">
+                <div class="person-info">
+                    <span class="name"  data-content-key="primearministrname">Timofey</span>
+                    <div class="avatar avatar-left"></div>
+                </div>
+                <div class="role-info role-left">
+                    <p data-content-key="primearministrtext_1">> Либеральная элита</p>
+                    <p data-content-key="primearministrtext_2">> Президент партии ЛР</p>
+                    <p data-content-key="primearministrtext_3">> Репутация +5</p>
+                    <h2 data-content-key="primearministrtext_4">Премьер Министр</h2>
+                </div>
+            </div>
+
+            <div class="label-right">
+                <div class="person-info">
+                    <div class="avatar avatar-right"></div>
+                    <span class="name"  data-content-key="leadername">Krolituki</span>
+                </div>
+                <div class="role-info role-right">
+                    <p data-content-key="leadertext_1">Лидер Либеральной группы <</p>
+                    <p data-content-key="leadertext_2">Репутация +4 <</p>
+                    <h2 data-content-key="leadertext_3">Лидер / Президент</h2>
+                </div>
+            </div>
+
+
+            <div class="seats-container-firts">
+            <div class="seats-container">
+                <div class="tooltip-global"></div>
+            </div>
+            </div>
+
+        </div>
+        <div class="modal" data-modal="Тесты">
+            <h2 class="modal-title">Тесты</h2>
+            <div class="modal-underline"></div>
+        </div>
+
+        <div class="modal" data-modal="Проекты">
+        
+
+        </div>
+    
+        <div class="modal" data-modal="Партии">
+            <h2 class="modal-title">Партии</h2>
+        </div>
+    
+        <div class="modal modal-developers-clip" data-modal="Разработчики">
+            <h2 class="modal-title" data-content-key="developers_title">Разработчики</h2>
+            <button id="adminLoginBtn" class="admins-admin-btn"></button>
+            <div class="developer-list-firts">
+                <div class="developer-list">
+                    <div class="developer-card">
+                        <div class="developer-avatar-container">
+                            <div class="developer-avatar-content">
+                                <div class="developer-avatar"
+                                    style="--avatar-bottom: url('https://avatars.akamai.steamstatic.com/2008aa582c47367715485af24871261c2528ea08_full.jpg');
+                                            --avatar-top: url('https://cdn.akamai.steamstatic.com/steamcommunity/public/images/items/1232580/7e41e2a48ea057e0f6267ff736815cd1354e04d3.png');">
+                                </div>
+                                <div class="developer-name" data-content-key="dev_fazenn_name">Fazenn</div>
+                            </div>
+                        </div>
+                        <video class="developer-card__video" autoplay muted loop playsinline>
+                        <source src="https://cdn.akamai.steamstatic.com/steamcommunity/public/images/items/1263950/b57a67011c8500aedba1e8e98c7ee286ee06290f.webm" type="video/mp4">
+                        Ваш браузер не поддерживает видео.
+                        </video>
+                        <div class="developer-card__overlay">
+                            <div class="developer-role-texts">
+                                <span class="developer-role" data-content-key="dev_fazenn_role1">Код</span>
+                                <span class="developer-role" data-content-key="dev_fazenn_role2">Дизайн</span>
+                            </div>
+                        </div>
+                    </div>
+                                        <div class="developer-card">
+                        <div class="developer-avatar-container">
+                             <div class="developer-avatar-content">
+                                <div class="developer-avatar"
+                                style="--avatar-bottom: url('images/TimofeyAvatar.png');
+                                        --avatar-top: url('https://cdn.fastly.steamstatic.com/steamcommunity/public/images/items/253230/27ef3d62a0e42bf4ac60d426f2f172e1790ec0fd.png');">
+                                </div>
+                                <div class="developer-name" data-content-key="dev_timofey_name">Timofey</div>
+                            </div>
+                        </div>
+                        <video class="developer-card__video" autoplay muted loop playsinline>
+                        <source src="https://shared.akamai.steamstatic.com/community_assets/images/items/730/28280d425d20a4d8cd9cfeff3389c234968ca301.webm" type="video/mp4">
+                        Ваш браузер не поддерживает видео.
+                        </video>
+                        <div class="developer-card__overlay">
+                            <div class="developer-role-texts">
+                                <span class="developer-role" data-content-key="dev_timofey_role1">Куратор</span>
+                                <span class="developer-role" data-content-key="dev_timofey_role2">Советник по дизайну</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+          
+        </div>
+    </div>
+
+    <div class="square-container"></div>
+    <header class="header">
+        <h1 class="typewriter"></h1>
+        <button class="tests-button">Тесты</button>
+    </header>
+
+    <div id="adminPanel" class="admins-admin-panel admins-hidden">
+        <div class="admins-panel-header">
+            <h3>Панель администратора</h3>
+        </div>
+        <div class="admins-controls">
+            <button id="publishBtn" class="admins-btn admins-btn-success">Опубликовать изменения</button>
+            <button id="logoutBtn" class="admins-btn admins-btn-danger">Выйти</button>
+        </div>
+        <div id="statusMessage" class="admins-status admins-info">Готов к работе</div>
+    </div>
+
+
+    <div id="loginModal" class="admins-modal admins-hidden">
+        <div class="admins-modal-content">
+            <div class="admins-panel-header">
+                <h3>Вход для администратора</h3>
+            </div>
+            <input type="password" id="passwordInput" class="admins-input-field" placeholder="Введите пароль">
+            <button id="loginBtn" class="admins-btn admins-btn-primary" style="width: 100%;">Войти</button>
+            <button id="cancelBtn" class="admins-btn admins-btn-secondary" style="width: 100%; margin-top: 8px;">Отмена</button>
+           
+        </div>
+    </div>
+</body>
+    <script src="admin.js"></script>
+    <script src="ai.js"></script>
+    <script src="three.min.js"></script>
+    <script src="vanta.net.min.js"></script>
+    <script src="script.js"></script>
+</html>
