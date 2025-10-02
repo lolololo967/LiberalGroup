@@ -1,11 +1,5 @@
 {
-  "name": "liberal-group",
-  "version": "1.0.0",
-  "description": "Liberal Group Website",
   "dependencies": {
-    "@supabase/supabase-js": "^2.38.0"
-  },
-  "scripts": {
-    "dev": "vercel dev"
+    "pdf-parse": "^2.1.1"
   }
 }
