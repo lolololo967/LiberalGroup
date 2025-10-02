@@ -16,7 +16,7 @@
                 <button data-content-key="nav_info">Информация</button>
                 <button data-content-key="nav_parliament">Парламент</button>
                 <button data-content-key="nav_main">Главная</button>
-                <button data-content-key="nav_projects">Проекты</button>
+                <button data-content-key="nav_projects">ИИ помощник</button>
                 <button data-content-key="nav_parties">Партии</button>
                 <button data-content-key="nav_developers">Разработчики</button>
             </div>
@@ -1077,6 +1077,29 @@
         </div>
 
         <div class="modal" data-modal="Проекты">
+            <!-- Чат-бот -->
+            <div id="chatAssistant" class="chat-assistant">
+            <div class="chat-header">
+                <span>🤖 Помощник ЛГ</span>
+                <button id="closeChat">×</button>
+            </div>
+            
+            <div class="chat-messages" id="chatMessages">
+                <div class="message assistant">
+                Привет! Я помощник Либеральной группы 🏛️ Могу рассказать о наших участниках, партиях, конституции или просто поболтать! Что тебя интересует?
+                </div>
+            </div>
+            
+            <div class="chat-input">
+                <input type="text" id="chatInput" placeholder="Задайте вопрос...">
+                <button id="sendMessage">➤</button>
+            </div>
+            </div>
+
+            <button id="openChat" class="chat-toggle">
+            <span>🤖</span>
+            Помощник ЛГ
+            </button>
         </div>
     
         <div class="modal" data-modal="Партии">
@@ -1167,6 +1190,7 @@
     </div>
 </body>
     <script src="admin.js"></script>
+    <script src="ai.js"></script>
     <script src="three.min.js"></script>
     <script src="vanta.net.min.js"></script>
     <script src="script.js"></script>
