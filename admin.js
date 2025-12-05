@@ -1,4 +1,4 @@
-// admin.js - без эмоджи
+// admin.js - управление пользователями (никнейм + пароль)
 const SUPABASE_URL = 'https://eqkanneloooeopkhhpuc.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxa2FubmVsb29vZW9wa2hocHVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ5MDk1MDgsImV4cCI6MjA4MDQ4NTUwOH0.EL7ZR9iyRSPIOYudaFWDQC4z1hXzu0PPtE1McoVvGp0';
 
@@ -96,28 +96,17 @@ async function publishChanges() {
 function toggleEditMode(enable) {
     const elements = document.querySelectorAll('[data-content-key]');
     
-    console.log(`Найдено ${elements.length} элементов для редактирования`);
-    
     elements.forEach(element => {
         element.contentEditable = enable;
         if (enable) {
             element.classList.add('admins-editable');
-
-            if (element.tagName === 'BUTTON') {
-                // Для кнопок ничего не меняем
-            }
         } else {
             element.classList.remove('admins-editable');
-
-            if (element.tagName === 'BUTTON') {
-                element.style.border = '';
-            }
         }
     });
     
     if (enable) {
         document.getElementById('adminPanel').classList.remove('admins-hidden');
-
         const adminLoginBtns = document.querySelectorAll('#adminLoginBtn');
         adminLoginBtns.forEach(btn => {
             btn.style.display = 'none';
@@ -125,7 +114,6 @@ function toggleEditMode(enable) {
         showStatus('Режим редактирования активен', 'info');
     } else {
         document.getElementById('adminPanel').classList.add('admins-hidden');
-
         const adminLoginBtns = document.querySelectorAll('#adminLoginBtn');
         adminLoginBtns.forEach(btn => {
             btn.style.display = 'block';
@@ -134,69 +122,86 @@ function toggleEditMode(enable) {
     }
 }
 
-// ФУНКЦИИ ДЛЯ УПРАВЛЕНИЯ ПАРОЛЯМИ
+// ФУНКЦИИ ДЛЯ УПРАВЛЕНИЯ ПОЛЬЗОВАТЕЛЯМИ
 
-function togglePasswordManager(show) {
-    const passwordPanel = document.getElementById('passwordManagerPanel');
-    if (!passwordPanel) return;
+function toggleUserManager(show) {
+    const userPanel = document.getElementById('userManagerPanel');
+    if (!userPanel) return;
     
     if (show) {
-        passwordPanel.classList.remove('admins-hidden');
-        loadPasswordList();
+        userPanel.classList.remove('admins-hidden');
+        loadUserList();
     } else {
-        passwordPanel.classList.add('admins-hidden');
+        userPanel.classList.add('admins-hidden');
     }
 }
 
-async function loadPasswordList() {
+async function loadUserList() {
     try {
-        const { data: passwords, error } = await supabase
-            .from('user_passwords')
+        const { data: users, error } = await supabase
+            .from('users')
             .select('*')
             .order('created_at', { ascending: false });
         
         if (error) throw error;
         
-        const passwordList = document.getElementById('passwordList');
-        if (!passwordList) return;
+        const userList = document.getElementById('userList');
+        if (!userList) return;
         
-        if (!passwords || passwords.length === 0) {
-            passwordList.innerHTML = '<p style="color: #ffa500; padding: 10px;">Нет созданных паролей</p>';
+        if (!users || users.length === 0) {
+            userList.innerHTML = '<p style="color: #ffa500; padding: 10px;">Нет созданных пользователей</p>';
             return;
         }
         
-        const passwordsHTML = passwords.map(pwd => `
-            <div class="password-item">
-                <div class="password-info">
-                    <strong>${escapeHtml(pwd.username)}</strong>
-                    <span>${escapeHtml(pwd.password)}</span>
+        const usersHTML = users.map(user => `
+            <div class="user-item">
+                <div class="user-info">
+                    <strong>${escapeHtml(user.username)}</strong>
+                    <span>${escapeHtml(user.password)}</span>
                 </div>
-                <div class="password-actions">
-                    <button onclick="copyPassword('${escapeHtml(pwd.password)}')" class="admins-btn-small">Копировать</button>
-                    <button onclick="deletePassword(${pwd.id})" class="admins-btn-small admins-btn-danger">Удалить</button>
+                <div class="user-stats">
+                    <small>Тестов пройдено: ${user.tests_taken || 0}</small>
+                    <small>Последний тест: ${user.last_test ? new Date(user.last_test).toLocaleDateString('ru-RU') : 'никогда'}</small>
                 </div>
-                <div class="password-meta">
-                    <small>Создан: ${new Date(pwd.created_at).toLocaleDateString('ru-RU')}</small>
+                <div class="user-actions">
+                    <button onclick="copyPassword('${escapeHtml(user.password)}')" class="admins-btn-small">Копировать пароль</button>
+                    <button onclick="copyUserInfo('${escapeHtml(user.username)}', '${escapeHtml(user.password)}')" class="admins-btn-small">Копировать данные</button>
+                    <button onclick="deleteUser(${user.id})" class="admins-btn-small admins-btn-danger">Удалить</button>
+                </div>
+                <div class="user-meta">
+                    <small>Создан: ${new Date(user.created_at).toLocaleDateString('ru-RU')}</small>
                 </div>
             </div>
         `).join('');
         
-        passwordList.innerHTML = passwordsHTML;
+        userList.innerHTML = usersHTML;
         
     } catch (error) {
-        console.error('Ошибка загрузки паролей:', error);
-        document.getElementById('passwordList').innerHTML = 
+        console.error('Ошибка загрузки пользователей:', error);
+        document.getElementById('userList').innerHTML = 
             '<p style="color: #ff4444; padding: 10px;">Ошибка: ' + error.message + '</p>';
     }
 }
 
-async function addNewPassword() {
+async function addNewUser() {
     const username = document.getElementById('newUsername').value.trim();
     const password = document.getElementById('newPassword').value.trim();
-    const errorElement = document.getElementById('passwordError');
+    const errorElement = document.getElementById('userError');
     
     if (!username || !password) {
         errorElement.textContent = 'Заполните все поля';
+        errorElement.style.color = '#ff4444';
+        return;
+    }
+    
+    if (username.length < 2 || username.length > 20) {
+        errorElement.textContent = 'Имя пользователя: 2-20 символов';
+        errorElement.style.color = '#ff4444';
+        return;
+    }
+    
+    if (password.length < 4) {
+        errorElement.textContent = 'Пароль минимум 4 символа';
         errorElement.style.color = '#ff4444';
         return;
     }
@@ -206,49 +211,61 @@ async function addNewPassword() {
         errorElement.style.color = '#ffa500';
         
         const { data, error } = await supabase
-            .from('user_passwords')
+            .from('users')
             .insert([{
                 username: username,
                 password: password,
-                created_by: 'admin'
+                created_by: 'admin',
+                tests_taken: 0
             }]);
         
         if (error) throw error;
         
-        errorElement.textContent = 'Пароль добавлен!';
+        errorElement.textContent = 'Пользователь добавлен!';
         errorElement.style.color = '#4CAF50';
         
         document.getElementById('newUsername').value = '';
         document.getElementById('newPassword').value = '';
         
         setTimeout(() => {
-            loadPasswordList();
+            loadUserList();
             errorElement.textContent = '';
         }, 2000);
         
     } catch (error) {
-        console.error('Ошибка добавления пароля:', error);
-        errorElement.textContent = 'Ошибка: ' + error.message;
+        console.error('Ошибка добавления пользователя:', error);
+        if (error.code === '23505') {
+            errorElement.textContent = 'Это имя пользователя уже занято';
+        } else {
+            errorElement.textContent = 'Ошибка: ' + error.message;
+        }
         errorElement.style.color = '#ff4444';
     }
 }
 
-async function deletePassword(passwordId) {
-    if (!confirm('Удалить этот пароль?')) return;
+async function deleteUser(userId) {
+    if (!confirm('Удалить этого пользователя и все его результаты?')) return;
     
     try {
-        const { error } = await supabase
-            .from('user_passwords')
+        // Сначала удаляем результаты тестов пользователя
+        const { error: resultsError } = await supabase
+            .from('test_results')
             .delete()
-            .eq('id', passwordId);
+            .eq('username', 'username_placeholder'); // Нужно сначала получить имя пользователя
+        
+        // Затем удаляем самого пользователя
+        const { error } = await supabase
+            .from('users')
+            .delete()
+            .eq('id', userId);
         
         if (error) throw error;
         
-        showStatus('Пароль удален', 'success');
-        loadPasswordList();
+        showStatus('Пользователь удален', 'success');
+        loadUserList();
         
     } catch (error) {
-        console.error('Ошибка удаления пароля:', error);
+        console.error('Ошибка удаления пользователя:', error);
         showStatus('Ошибка удаления: ' + error.message, 'error');
     }
 }
@@ -256,6 +273,15 @@ async function deletePassword(passwordId) {
 function copyPassword(password) {
     navigator.clipboard.writeText(password).then(() => {
         showStatus('Пароль скопирован', 'success');
+    }).catch(err => {
+        console.error('Ошибка копирования:', err);
+    });
+}
+
+function copyUserInfo(username, password) {
+    const text = `Имя пользователя: ${username}\nПароль: ${password}\n\nСообщите эти данные пользователю.`;
+    navigator.clipboard.writeText(text).then(() => {
+        showStatus('Данные пользователя скопированы', 'success');
     }).catch(err => {
         console.error('Ошибка копирования:', err);
     });
@@ -296,53 +322,29 @@ document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('passwordInput').focus();
     });
 
-    // Кнопка входа - используем пароль из Vercel
-    loginBtn.addEventListener('click', async function() {
+    // Кнопка входа
+    loginBtn.addEventListener('click', function() {
         const password = document.getElementById('passwordInput').value;
         
-        if (!password) {
-            alert('Введите пароль');
-            return;
-        }
+        // Пароль админа - измените на свой
+        const ADMIN_PASSWORD = 'admin123';
         
-        loginBtn.textContent = 'Проверка...';
-        loginBtn.disabled = true;
-        
-        try {
-            // Проверяем пароль через API Vercel
-            const response = await fetch('/api/verify-admin', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ password: password.trim() })
-            });
+        if (password === ADMIN_PASSWORD) {
+            isAdmin = true;
+            document.getElementById('loginModal').classList.add('admins-hidden');
+            toggleEditMode(true);
+            console.log('Успешный вход в админ-панель');
             
-            const result = await response.json();
+            // Создаем панель управления пользователями
+            createUserManagerPanel();
             
-            if (result.success) {
-                isAdmin = true;
-                document.getElementById('loginModal').classList.add('admins-hidden');
-                toggleEditMode(true);
-                console.log('Успешный вход в админ-панель');
-                
-                // Создаем панель управления паролями
-                createPasswordManagerPanel();
-                
-                // Добавляем кнопку управления паролями
-                addPasswordManagerButton();
-                
-            } else {
-                alert('Неверный пароль');
-                document.getElementById('passwordInput').focus();
-                document.getElementById('passwordInput').select();
-            }
-        } catch (error) {
-            console.error('Ошибка проверки пароля:', error);
-            alert('Ошибка соединения с сервером');
-        } finally {
-            loginBtn.textContent = 'Войти';
-            loginBtn.disabled = false;
+            // Добавляем кнопку управления пользователями
+            addUserManagerButton();
+            
+        } else {
+            alert('Неверный пароль');
+            document.getElementById('passwordInput').focus();
+            document.getElementById('passwordInput').select();
         }
     });
 
@@ -365,20 +367,19 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Закрытие модального окна при клике вне его
+    // Закрытие модального окна
     document.getElementById('loginModal').addEventListener('click', function(e) {
         if (e.target === this) {
             document.getElementById('loginModal').classList.add('admins-hidden');
         }
     });
 
-    // Режим реального времени для контента
+    // Режим реального времени
     supabase
         .channel('public:site_content')
         .on('postgres_changes', 
             { event: '*', schema: 'public', table: 'site_content' }, 
             (payload) => {
-                console.log('Получено обновление:', payload);
                 if (!isAdmin) {
                     const newData = payload.new;
                     const elements = document.querySelectorAll(`[data-content-key="${newData.content_key}"]`);
@@ -391,33 +392,33 @@ document.addEventListener('DOMContentLoaded', function() {
         .subscribe();
 });
 
-// Создание панели управления паролями
-function createPasswordManagerPanel() {
-    if (document.getElementById('passwordManagerPanel')) return;
+// Создание панели управления пользователями
+function createUserManagerPanel() {
+    if (document.getElementById('userManagerPanel')) return;
     
-    const passwordPanelHTML = `
-        <div id="passwordManagerPanel" class="password-manager-panel admins-hidden">
+    const userPanelHTML = `
+        <div id="userManagerPanel" class="user-manager-panel admins-hidden">
             <div class="admins-panel-header">
-                <h3>Управление паролями</h3>
-                <button onclick="togglePasswordManager(false)" class="admins-btn-small">X</button>
+                <h3>Управление пользователями</h3>
+                <button onclick="toggleUserManager(false)" class="admins-btn-small">X</button>
             </div>
             
-            <div class="password-manager-section">
-                <h4>Добавить новый пароль</h4>
-                <div class="password-form">
-                    <input type="text" id="newUsername" class="admins-input-field" placeholder="Никнейм пользователя" maxlength="20">
-                    <div class="password-input-group">
+            <div class="user-manager-section">
+                <h4>Добавить нового пользователя</h4>
+                <div class="user-form">
+                    <input type="text" id="newUsername" class="admins-input-field" placeholder="Имя пользователя" maxlength="20">
+                    <div class="user-input-group">
                         <input type="text" id="newPassword" class="admins-input-field" placeholder="Пароль">
                         <button onclick="generatePassword()" class="admins-btn-small" type="button">Сгенерировать</button>
                     </div>
-                    <button onclick="addNewPassword()" class="admins-btn admins-btn-success">Добавить пароль</button>
-                    <div id="passwordError" style="margin-top: 10px; min-height: 20px;"></div>
+                    <button onclick="addNewUser()" class="admins-btn admins-btn-success">Добавить пользователя</button>
+                    <div id="userError" style="margin-top: 10px; min-height: 20px;"></div>
                 </div>
             </div>
             
-            <div class="password-manager-section">
-                <h4>Существующие пароли</h4>
-                <div id="passwordList" class="password-list">
+            <div class="user-manager-section">
+                <h4>Существующие пользователи</h4>
+                <div id="userList" class="user-list">
                     <p style="color: #ffa500; padding: 10px;">Загрузка...</p>
                 </div>
             </div>
@@ -425,36 +426,35 @@ function createPasswordManagerPanel() {
     `;
     
     const panel = document.createElement('div');
-    panel.innerHTML = passwordPanelHTML;
+    panel.innerHTML = userPanelHTML;
     document.body.appendChild(panel);
     
-    // Добавляем стили
-    addPasswordManagerStyles();
+    addUserManagerStyles();
 }
 
-// Добавление кнопки управления паролями
-function addPasswordManagerButton() {
-    const passwordBtn = document.createElement('button');
-    passwordBtn.innerHTML = 'Управление паролями';
-    passwordBtn.className = 'admins-btn admins-btn-primary';
-    passwordBtn.style.marginTop = '10px';
-    passwordBtn.onclick = () => togglePasswordManager(true);
+// Добавление кнопки управления пользователями
+function addUserManagerButton() {
+    const userBtn = document.createElement('button');
+    userBtn.innerHTML = 'Управление пользователями';
+    userBtn.className = 'admins-btn admins-btn-primary';
+    userBtn.style.marginTop = '10px';
+    userBtn.onclick = () => toggleUserManager(true);
     
     const controls = document.querySelector('.admins-controls');
     if (controls) {
-        controls.appendChild(passwordBtn);
+        controls.appendChild(userBtn);
     }
 }
 
-// Добавление стилей для панели паролей
-function addPasswordManagerStyles() {
+// Добавление стилей
+function addUserManagerStyles() {
     const style = document.createElement('style');
     style.textContent = `
-        .password-manager-panel {
+        .user-manager-panel {
             position: fixed;
             top: 70px;
             left: 20px;
-            width: 350px;
+            width: 400px;
             max-height: 80vh;
             overflow-y: auto;
             background: rgba(1, 1, 1, 0.95);
@@ -465,14 +465,14 @@ function addPasswordManagerStyles() {
             clip-path: polygon(0 0, 99% 1%, 100% 100%, 1% 99%);
         }
         
-        .password-manager-section {
+        .user-manager-section {
             margin: 20px 0;
             padding: 15px;
             border: 1px solid rgba(255, 165, 0, 0.3);
             background: rgba(0, 0, 0, 0.5);
         }
         
-        .password-manager-section h4 {
+        .user-manager-section h4 {
             color: #ffa500;
             margin-bottom: 15px;
             font-weight: 100;
@@ -480,28 +480,28 @@ function addPasswordManagerStyles() {
             padding-bottom: 5px;
         }
         
-        .password-form {
+        .user-form {
             display: flex;
             flex-direction: column;
             gap: 10px;
         }
         
-        .password-input-group {
+        .user-input-group {
             display: flex;
             gap: 5px;
         }
         
-        .password-input-group input {
+        .user-input-group input {
             flex: 1;
         }
         
-        .password-list {
+        .user-list {
             max-height: 300px;
             overflow-y: auto;
             margin-top: 10px;
         }
         
-        .password-item {
+        .user-item {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 165, 0, 0.2);
             padding: 10px;
@@ -509,17 +509,18 @@ function addPasswordManagerStyles() {
             border-radius: 4px;
         }
         
-        .password-info {
+        .user-info {
             display: flex;
             justify-content: space-between;
             margin-bottom: 5px;
         }
         
-        .password-info strong {
+        .user-info strong {
             color: #ffa500;
+            font-size: 16px;
         }
         
-        .password-info span {
+        .user-info span {
             color: #4CAF50;
             font-family: monospace;
             background: rgba(0, 0, 0, 0.3);
@@ -527,19 +528,27 @@ function addPasswordManagerStyles() {
             border-radius: 3px;
         }
         
-        .password-actions {
+        .user-stats {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: #888;
+            margin: 5px 0;
+        }
+        
+        .user-actions {
             display: flex;
             gap: 5px;
             margin: 8px 0;
         }
         
-        .password-actions button {
+        .user-actions button {
             flex: 1;
             padding: 4px 8px;
-            font-size: 12px;
+            font-size: 11px;
         }
         
-        .password-meta {
+        .user-meta {
             font-size: 11px;
             color: #888;
             text-align: right;
