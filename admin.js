@@ -1,9 +1,18 @@
 // admin.js - управление пользователями (никнейм + пароль)
-const SUPABASE_URL = https://client.falixnodes.net/verypleasedisable';
+const SUPABASE_URL = 'https://client.falixnodes.net/verypleasedisable';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxa2FubmVsb29vZW9wa2hocHVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ5MDk1MDgsImV4cCI6MjA4MDQ4NTUwOH0.EL7ZR9iyRSPIOYudaFWDQC4z1hXzu0PPtE1McoVvGp0';
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let isAdmin = false;
+
+// Получаем пароль админа из переменных окружения Vercel
+// В Vercel установите переменную ADMIN_PASSWORD в настройках проекта
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 
+                      import.meta.env?.VITE_ADMIN_PASSWORD || 
+                      window.__ENV?.ADMIN_PASSWORD || 
+                      'admin123'; // fallback для разработки
+
+console.log('Admin password loaded:', ADMIN_PASSWORD ? '***' : 'NOT SET');
 
 function showStatus(message, type = 'info') {
     const statusElement = document.getElementById('statusMessage');
@@ -306,6 +315,7 @@ function escapeHtml(text) {
 
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Админ панель загружена');
+    console.log('Admin password available:', ADMIN_PASSWORD ? 'YES' : 'NO');
     
     loadContent();
     
@@ -314,6 +324,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const cancelBtn = document.getElementById('cancelBtn');
     const publishBtn = document.getElementById('publishBtn');
     const logoutBtn = document.getElementById('logoutBtn');
+    
+    // Проверяем, доступен ли пароль админа
+    if (!ADMIN_PASSWORD || ADMIN_PASSWORD === 'admin123') {
+        console.warn('ВНИМАНИЕ: ADMIN_PASSWORD не установлен или используется пароль по умолчанию!');
+        console.warn('Установите переменную окружения ADMIN_PASSWORD в настройках Vercel');
+    }
     
     // Вход в админ-панель
     adminLoginBtn.addEventListener('click', function() {
@@ -326,8 +342,10 @@ document.addEventListener('DOMContentLoaded', function() {
     loginBtn.addEventListener('click', function() {
         const password = document.getElementById('passwordInput').value;
         
-        // Пароль админа - измените на свой
-        const ADMIN_PASSWORD = 'admin123';
+        if (!ADMIN_PASSWORD || ADMIN_PASSWORD === '') {
+            alert('Системная ошибка: пароль администратора не настроен');
+            return;
+        }
         
         if (password === ADMIN_PASSWORD) {
             isAdmin = true;
