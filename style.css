@@ -1,15 +1,19 @@
+
 @font-face {
     font-family: 'Midnight';
     src: url('fonts/MidnightLettersItalic-aYV6m.ttf') format('truetype');
     font-weight: 100;
     font-style: normal;
 }
+
+
 @font-face {
     font-family: 'rob';
     src: url('fonts/RobtronikaItalic-xRnXV.ttf') format('truetype');
     font-weight: normal;
     font-style: normal;
 }
+
 /* Обнуление */
 * {
     margin: 0;
@@ -26,6 +30,7 @@ body {
   overflow: hidden;
   min-height: 100vh;
     align-items: flex-start;  /* Можно изменить по вертикали */
+      cursor: url('cursor.png'), auto;
 }
 
 ::-webkit-scrollbar-track {
@@ -65,6 +70,9 @@ body {
   padding-right: 0.2em;
   max-width: 100%;
   user-select: none;
+
+  letter-spacing: 2px;
+
 }
 
 .typewriter span {
@@ -78,75 +86,95 @@ body {
   opacity: 1;
 }
 .nav-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 80px;
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0; /* Скрыта по умолчанию */
-  transition: opacity 1s ease;
+    position: fixed;
+    top: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%; /* не на весь экран */
+    height: 45px; /* немного ниже */
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    border-left: 1px solid red;
+    border-right: 1px solid red;
 }
 
 .nav-buttons {
-  display: flex;
-  width: 98%;
-  gap: 25px;
-  justify-content: center;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 100%;
 }
 
+/* Все кнопки — одинаковые по размеру */
 .nav-buttons button {
-  width: 220px;
-  background-color: transparent;
-  border: 1px solid rgb(199, 0, 0);
-  color: red;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  padding: 8px 16px;
-  position: relative;
-  overflow: hidden;
-  font-family: 'Midnight', Courier, monospace; /* Моноширинный шрифт */
-  height: 40px;
+    flex: 1; /* равное распределение по ширине */
+    background: transparent;
+    border: none;
+    color: #ff2a2a;
+    font-size: 14px;
+    font-family: 'Midnight', monospace;
+    letter-spacing: 1px;
+    cursor: pointer;
+    position: relative;
+    transition: color 0.3s ease;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.nav-buttons button:hover{
-  transform: translateY(10px);
-  border: 1px solid rgb(255, 115, 115);
-  color: rgb(255, 115, 115);
+/* Все кнопки — одинаковые по размеру */
+.nav-buttons button::before {
+   content: "";
+   position: absolute;
+   top: 50%;
+   left: 0px;
+   transform: translate(0%,-50%);
+    height: 70%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-left: 1px solid rgba(255, 0, 0, 0.481);
 }
+/* Линия под кнопкой */
+.nav-buttons button::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%) scaleX(0);
+    width: 60%;
+    height: 2px;
+    background: #ff2a2a;
+    transition: transform 0.3s ease;
+    transform-origin: center;
+}
+
+/* Наведение */
+.nav-buttons button:hover {
+    color: #ff5555;
+}
+
+.nav-buttons button:hover::after {
+    transform: translateX(-50%) scaleX(1);
+}
+
+/* Активная кнопка */
 .nav-buttons button.active {
-  transform: translateY(10px);
-  border: 1px solid rgb(255, 115, 115);
-  color: rgb(255, 115, 115);
+    color: #ff1a1a;
 }
 
-.square-container {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
-  z-index: 5;
-  opacity: 0; /* Скрыт по умолчанию */
-  transition: opacity 1s ease;
+.nav-buttons button.active::after {
+    transform: translateX(-50%) scaleX(1);
+    background: #ff1a1a;
 }
 
-.falling-square {
-  position: absolute;
-  background-color: rgb(255, 115, 115);
-  animation: fall linear forwards;
-
-}
-
-.falling-square.fade-out {
-  opacity: 0;
-  transition: opacity 1s ease;
-}
 .modals-wrapper {
     position: fixed;
     top: 0;
@@ -163,7 +191,7 @@ body {
 .modal {
     width: 80%;
     height: 75%;
-    border: 1px solid #f00;
+    border: 1px solid rgba(255, 0, 0, 0.6);
     padding: 30px;
     opacity: 0;
     transform: scale(0.95) translateY(20px);
@@ -172,6 +200,7 @@ body {
     pointer-events: none;
     overflow-y: auto;
     background-color: rgba(1, 1, 1, 0.2);
+
 }
 .modal-title{
   color: red;
@@ -247,7 +276,7 @@ body {
     
     font-family: 'rob', Courier, monospace;
     font-size: 0.6rem;
-    opacity: 0.5;
+    opacity: 0;
     pointer-events: none;
     transition: opacity 0.4s ease;
     z-index: 10;
@@ -266,12 +295,12 @@ body {
 
 }
 #info-part1::before {
-  content: "Туториалы";
+  content: "Конституция";
   position: absolute;
-  width: 120px;
-  height: 40px;
+  width: 145px;
+  height: 25px;
   background: url(images/Button.png) center/cover no-repeat;
-  background-position: 0px -20px;
+  background-position: 0px -29px;
   top: 105%;
   left: 50%;
   transform: translate(-50%,-50%);
@@ -405,7 +434,7 @@ body {
   position: absolute;
   width: 40px;
   height: 40px;
-  background: url('images/Triangle2.png') no-repeat center/cover;
+  background: url('images/Triangle.png') no-repeat center/cover;
   z-index: 2;
   transform: translate(-50%, -50%);
   top: 50%;
@@ -449,16 +478,14 @@ border: 2px solid red
 }
 .tooltip-global {
   position: absolute;
-  background: rgba(23, 23, 23, 0.5);
+  background: rgba(23, 23, 23, 1);
   color: rgb(255, 0, 0);
   padding: 4px 8px;
   font-size: 15px;
   white-space: nowrap;
   pointer-events: none;
   opacity: 0;
-  transition:
-    opacity 0.3s ease,
-    transform 0.3s ease;
+  transition: 0.3s ease;
   transform: translateX(0);
   z-index: 10000;
   user-select: none;
@@ -537,7 +564,7 @@ border: 2px solid red
   font-size: 14px;
   color: white;
   width: 90%;
-  margin-top: 5px;
+  margin-top: 13px;
 }
 .avatar-bg {
   z-index: 0;
@@ -607,7 +634,7 @@ border: 2px solid red
   background-size: cover;
   background-position: center;
   z-index: 1;
-  background-image: url("https://avatars.fastly.steamstatic.com/ebe1a752267fb2620adbbd1c5710de99be70fbca_full.jpg");
+  background-image: url("https://avatars.akamai.steamstatic.com/845bff549f91fc19ba65875de3cc6b976dabbf24_full.jpg");
   transform: scale(0.8);
 }
 
@@ -652,36 +679,6 @@ border: 2px solid red
 
 .role-right {
   text-align: right;
-}
-.tests-button {
-    position: absolute;
-    bottom: 20px;
-    left: 50%;
-    transform: translateX(-50%);
-    background-color: transparent;
-    border: 1px solid rgb(199, 0, 0);
-    color: red;
-    font-size: 16px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    padding: 8px 16px;
-    font-family: 'Midnight', Courier, monospace;
-    z-index: 10;
-    opacity: 0;
-    pointer-events: none;
-    width: 220px;
-    height: 40px;
-}
-
-.tests-button:hover {
-    transform: translateX(-50%) translateY(-5px);
-    border: 1px solid rgb(255, 115, 115);
-    color: rgb(255, 115, 115);
-}
-
-.header.centered .tests-button {
-    opacity: 1;
-    pointer-events: all;
 }
 .reputation-section-first{
   position: absolute;
@@ -815,61 +812,47 @@ border: 2px solid red
   left: 50%;
   transform: translate(-50%,-50%);
 }
-.main-roles-buttons{
+.main-roles-buttons {
   display: flex;
-  perspective: 800px; /* Общая перспектива для всех кнопок */
-  perspective-origin: 50% -500px;
-}
-
-.parallax-btn {
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  padding: 30px;
   width: 100%;
-  border-bottom: 1px solid red;
-  border-top: none;
-  border-left: none;
-  border-right: none;
-  background: none;
-  font-size: 18px;
-  margin: 30px;
-  color: red;
-  cursor: pointer;
-  user-select: none;
-  text-align: center;
-  box-sizing: border-box;
-  font-family: 'Midnight';
-  transition: 0.3s ease;
+  gap: 10px;
+}
+
+.role-btn {
   position: relative;
-
+  background: transparent;
+  color: #ff0015;
+  font-family: 'Midnight', sans-serif;
+  font-size: 18px;
+  letter-spacing: 0.5px;
+  padding: 14px 30px;
+  border: 1px solid #ff0015;
+  cursor: pointer;
+  overflow: hidden;
+  width: 100%;
+  transition: 0.3s ease;
+  text-align: left;
+  height: 50px;
 }
+/* Hover эффект с градиентом и мягкой подсветкой */
+.role-btn:hover {
+  box-shadow: 0 0px 15px rgba(230, 57, 70, 0.4);
+}
+
+/* Текст с лёгким увеличением */
+.role-btn:hover .btn-text {
+  transform: scale(1.05);
+}
+
 .btn-text {
-  display: block;
-  transition: transform 0.4s ease;
-  transform-style: preserve-3d;
+  display: inline-block;
+  transition: transform 0.3s ease;
 }
 
-/* Левый параллакс - постоянный эффект */
-.left-parallax {
-  transform: perspective(500px) rotateY(-12deg);
-}
-.left-parallax:hover{
-    transform: perspective(500px) rotateY(-15deg);
-}
-/* Центральная кнопка - легкий эффект глубины */
-.center-normal {
-  transform: perspective(500px) translateZ(34px);
-}
-.center-normal:hover{
-    transform: perspective(500px) translateZ(40px);
-}
-/* Правый параллакс - постоянный эффект */
-.right-parallax {
-  transform: perspective(500px) rotateY(12deg);
-}
-.right-parallax:hover{
-    transform: perspective(500px) rotateY(15deg);
-}
-.parallax-btn:hover{
-  text-shadow: 0px 0px 50px red;
-}
 .title-role{
   margin-top: 20px;
   margin-bottom: 20px;
@@ -1102,37 +1085,23 @@ border: 2px solid red
   transform: translate(-50%,-50%);
   width: 85.8%;
 }
-.pol-dop-standoff{
-  position: absolute;
-  top: 65%;
-  left: 50%;
-  transform: translate(-50%,-50%);
-  width: 85.8%;
-}
-.pol-dop-scp{
-  position: absolute;
-  top: 62%;
-  left: 50%;
-  transform: translate(-50%,-50%);
-  width: 85.8%;
-}
 .role-row-pol {
     display: flex;
     height: 40px;
     margin: 0;
     padding: 0;
     align-items: center;
-
+    justify-content:space-between;
     margin-top: 5px;
 }
 .role-left-pol {
-    width: 55%;
-    height: 100%;
+
+    width: 80%;
+    height: 40px;
     display: flex;
     align-items: center;
     padding: 0 15px;
     background: var(--gradient);
-    position: relative;
     clip-path: polygon(0 0, 91% 0, 80% 100%, 0% 100%);
     transition: 0.4s ease;
 }
@@ -1143,17 +1112,20 @@ border: 2px solid red
     color: #ffffff;
     font-weight: bold;
     font-family: 'rob', sans-serif;
-    font-size: 14px;
+    font-size: 12px;
     z-index: 2;
 }
 
 .role-right-pol {
-    width: 60%;
+
+    width: 100%;
     color: #ff0000;
-    padding: 0 15px;
     font-size: 14px;
     font-family: 'Midnight', sans-serif;
     text-align: right;
+    z-index: 3;
+
+
 }
      /* Стили админ-панели */
 .admins-hidden { display: none !important; }
@@ -1312,108 +1284,7 @@ border: 2px solid red
     padding-bottom: 10px;
     border-bottom: 1px solid red;
 }
-.chat-toggle {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  padding: 12px 20px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  border: none;
-  border-radius: 25px;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-weight: 500;
-}
-
-.chat-assistant {
-  position: fixed;
-  bottom: 80px;
-  right: 20px;
-  width: 400px;
-  height: 500px;
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-  display: none;
-  flex-direction: column;
-  z-index: 1001;
-  border: 2px solid #667eea;
-}
-
-.chat-assistant.active {
-  display: flex;
-}
-
-.chat-header {
-  padding: 16px;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: white;
-  border-radius: 14px 14px 0 0;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: 600;
-}
-
-.chat-messages {
-  flex: 1;
-  padding: 16px;
-  overflow-y: auto;
-  background: #f8f9fa;
-}
-
-.chat-input {
-  padding: 16px;
-  border-top: 1px solid #ddd;
-  display: flex;
-  gap: 10px;
-}
-
-.chat-input input {
-  flex: 1;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 14px;
-}
-
-.chat-input button {
-  padding: 12px 16px;
-  background: #667eea;
-  color: white;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-}
-
-.message {
-  margin-bottom: 12px;
-  padding: 12px;
-  border-radius: 12px;
-  max-width: 85%;
-  line-height: 1.4;
-}
-
-.message.user {
-  background: #667eea;
-  color: white;
-  margin-left: auto;
-}
-
-.message.assistant {
-  background: white;
-  border: 1px solid #ddd;
-}
-
-.loading {
-  opacity: 0.7;
-  font-style: italic;
-}
+.tests-container{}
 @keyframes fadeIn {
     from { opacity: 0; transform: translateX(10px); }
     to { opacity: 1; transform: translateX(0); }
@@ -1428,4 +1299,224 @@ border: 2px solid red
     transform: translateY(100px) rotate(360deg);
     opacity: 0;
   }
+}
+p.value {
+    margin-top: 22px;
+    margin-bottom: 22px;
+    text-indent: -16pt;
+    margin-left: 20pt;
+    font-size: 24pt;
+    line-height: 2.11666656px;
+    letter-spacing: 0.03em;
+    font-family: 'Montserrat';
+}
+
+p.axis_name {
+    margin-top: 50px;
+    color: #333333;
+    font-size: 19pt;
+    font-family: 'Montserrat';
+}
+p.question {
+    margin: 16pt auto;
+    color: #333333;
+    font-size: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: red;
+    font-weight: 100;
+    width: 90%;
+    height: 100px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(255, 0, 0, 0.389);
+}
+div.center {
+    background-color: #eeeeee;
+    font-family: 'Montserrat', sans-serif;
+    border-radius: 8pt;
+    padding: 6pt;
+    color: white;
+    width: 50%;
+    min-width: 488pt;
+    text-align: center;
+    text-decoration: none;
+    display: block;
+    font-size: 24pt;
+    margin: auto;
+}
+img.quadcolumn {
+    width: 23.75%;
+    transition: transform .3s;
+}
+img.quadcolumn:hover {
+    transform: scale(1.05);
+  }
+div.quadcolumn {
+    width: 23.75%;
+}
+div.axis_name {
+    color: #333333;
+    font-size: 19pt;
+    font-family: 'Montserrat';
+    display: inline-block;
+    padding-bottom: 8.65pt;
+}
+.spacer {
+    display: flex;
+}
+.spacer > div{
+    margin-top: 10px;
+    display: inline-block;
+    display: inline; /* For IE7 */
+    text-align: center;
+}
+.arrow {
+    width: 60%;
+    height: auto;
+}
+div.explanation_blurb_left {
+    vertical-align: top;
+    width: 37%;
+    margin-left: 1%;
+    margin-right: 1%;
+}
+div.explanation_blurb_right {
+    vertical-align: top;
+    width: 37%;
+    margin-left: 1%;
+    margin-right: 1%;
+}
+div.explanation_axis {
+    width: 20.9%;
+    vertical-align: top;
+}
+div.axis {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+div.bar {
+    height: 36pt;
+    line-height: 36pt;
+    padding: 8pt;
+    margin-top: 4pt;
+    margin-bottom: 4pt;
+    border-width: 4px;
+    border-right-width: 1px;
+    border-top-style: solid;
+    border-bottom-style: solid;
+    border-color: #222222;
+    background-color: #eeeeee;
+    display: block;
+    width: 50%;
+}
+div.text-wrapper {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 36pt;
+    line-height: 36pt;
+    color: #222222;
+    display: inline-block;
+}
+div.equality {
+    background-color: #f44336;
+    text-align: left;
+    border-right-style: solid;
+}
+div.wealth {
+    background-color: #00897b;
+    text-align: right;
+    border-left-style: solid;
+}
+div.liberty {
+    background-color: #ffeb3b;
+    text-align: left;
+    border-right-style: solid;
+}
+div.authority {
+    background-color: #3f51b5;
+    text-align: right;
+    border-left-style: solid;
+}
+div.peace {
+    background-color: #03a9f4;
+    text-align: right;
+    border-left-style: solid;
+}
+div.might {
+    background-color: #ff9800;
+    text-align: left;
+    border-right-style: solid;
+}
+div.progress {
+    background-color: #9c27b0;
+    text-align: right;
+    border-left-style: solid;
+}
+div.tradition {
+    background-color: #8bc34a;
+    text-align: left;
+    border-right-style: solid;
+}
+span.weight-300 {
+    font-weight: 300;
+}
+.explanation_bg {
+    background-color: #eeeeee;
+    border-radius: 25px;
+    margin-top: 15px;
+}
+#banner {
+    border-color: #444444;
+    border-style: solid;
+    border-width: 2px;
+    border-radius: 8pt;
+    display: block;
+    margin: 8pt;
+    margin-left: auto;
+    margin-right: auto;
+}
+#question-number{
+  color: red;
+  font-size: 15px;
+  text-align: center;
+  margin-top: 20px;
+  font-family: "rob";
+}
+.button-test-container{
+  display: flex;
+
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center; /* центрирование по горизонтали */
+  margin: 0 auto;
+  width: 90%; /* убедитесь, что контейнер занимает всю ширину */
+
+}
+.button-test{
+  background: rgba(0, 0, 0, 0.8);
+  border: none;
+  color: red;
+  width: 100%;
+  height: 50px;
+  text-align: center;
+  font-family: 'Midnight';
+  cursor: pointer;
+  transition: 0.3s ease;
+}
+.button-test:hover{
+    background: rgba(60, 0, 0, 0.493);
+}
+.button-test-off{
+  display: none;
+  border: none;
+  background: none;
+}
+.button-test-close{
+  width: 90%;
+}
+.test-var-container{
+  position: relative;
 }
