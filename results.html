@@ -252,6 +252,117 @@
             margin-bottom: 10px;
             font-size: 18px;
         }
+           /* Стили для кнопок и модального окна */
+        .results-actions {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            z-index: 10;
+        }
+        
+        .action-btn {
+            padding: 12px 30px;
+            margin: 0 10px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid red;
+            color: red;
+            font-family: 'Midnight';
+            cursor: pointer;
+            transition: 0.3s ease;
+            min-width: 150px;
+        }
+        
+        .action-btn:hover {
+            background: rgba(60, 0, 0, 0.493);
+        }
+        
+        /* Модальное окно для ввода пароля */
+        .password-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 10000;
+        }
+        
+        .password-modal-content {
+            padding: 30px;
+            border: 1px solid red;
+            background: rgba(1, 1, 1, 0.5);
+            backdrop-filter: blur(3px);
+            width: 320px;
+            text-align: center;
+        }
+        
+        .password-input {
+            width: 100%;
+            padding: 12px;
+            margin: 15px 0;
+            background: none;
+            border: none;
+            border-bottom: 1px dashed red;
+            color: red;
+            font-family: 'Midnight';
+            text-align: center;
+            font-size: 16px;
+        }
+        
+        .password-hint {
+            color: #ff6363;
+            font-size: 12px;
+            margin: 10px 0 20px 0;
+            font-style: italic;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .modal-btn {
+            flex: 1;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid red;
+            color: red;
+            font-family: 'Midnight';
+            cursor: pointer;
+        }
+        
+        .error-message {
+            color: #ff4444;
+            font-size: 12px;
+            margin: 10px 0;
+            min-height: 20px;
+        }
+        
+        .timer-info {
+            position: absolute;
+            bottom: 80px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            color: #ff6363;
+            font-size: 14px;
+        }
+        
+        #ideology-result {
+            position: absolute;
+            bottom: 100px;
+            left: 0;
+            width: 100%;
+            text-align: center;
+            color: red;
+            font-size: 18px;
+        }
     </style>
 </head>
 <body id="body">
@@ -297,207 +408,38 @@
     
     <div class="results-actions">
         <button class="action-btn" onclick="retakeTest()">Пройти заново</button>
-        <button class="action-btn" onclick="showPublishModal()">Опубликовать</button>
+        <button class="action-btn" onclick="showPasswordModal()">Опубликовать</button>
     </div>
     
-    <!-- Модальное окно для ввода никнейма -->
-    <div id="usernameModal" class="publish-modal">
-        <div class="publish-modal-content">
-            <h3>Для публикации результатов</h3>
-            <input type="text" id="usernameInput" class="password-input" placeholder="Ваш никнейм" maxlength="20">
-            <div class="password-hint">Ваш никнейм будет отображаться в результатах</div>
-            <div id="usernameError" class="error-message"></div>
-            <div class="modal-buttons">
-                <button class="modal-btn" onclick="checkUsername()">Далее</button>
-                <button class="modal-btn" onclick="hideUsernameModal()">Отмена</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Модальное окно для ввода пароля -->
-    <div id="passwordModal" class="publish-modal">
-        <div class="publish-modal-content">
-            <h3>🔒 Введите ваш пароль</h3>
-            <div id="passwordUsername" style="color: #ffa500; margin-bottom: 15px; font-size: 16px;">
-                Для пользователя: <strong id="usernameDisplay"></strong>
-            </div>
+ <div id="passwordModal" class="password-modal">
+        <div class="password-modal-content">
+            <h3 style="color: red; margin-bottom: 20px;">Введите ваш пароль</h3>
             <input type="password" id="userPassword" class="password-input" placeholder="Ваш личный пароль" autocomplete="off">
             <div class="password-hint">
-                💡 Ваш пароль вы можете узнать у разработчиков сайта
+                Ваш пароль вы можете узнать у разработчиков сайта
             </div>
             <div id="passwordError" class="error-message"></div>
             <div class="modal-buttons">
-                <button class="modal-btn" onclick="checkPassword()">✅ Опубликовать</button>
-                <button class="modal-btn" onclick="hidePasswordModal()">↩ Назад</button>
+                <button class="modal-btn" onclick="checkPasswordAndPublish()">Опубликовать</button>
+                <button class="modal-btn" onclick="hidePasswordModal()">Отмена</button>
             </div>
         </div>
     </div>
 
-    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+   <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script src="ideologies.js"></script>
     <script>
-        // === КОНФИГУРАЦИЯ SUPABASE ===
-        const SUPABASE_URL = 'https://ваш-id.supabase.co'; // ЗАМЕНИТЕ НА ВАШ URL
-        const SUPABASE_KEY = 'ваш-anon-key'; // ЗАМЕНИТЕ НА ВАШ КЛЮЧ
-        // =============================
+        const SUPABASE_URL = 'https://pwawgeyxzjntystktciz.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InB3YXdnZXl4empudHlzdGt0Y2l6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTkzMjU2NTQsImV4cCI6MjA3NDkwMTY1NH0.nS4TpZT7hq1PW4lLUiDccUmJSobnXWm1GFTWskYy8jI';
         
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         let testResults = {};
-        let currentUsername = '';
+        let currentUser = null;
         
-        // Функции для отображения результатов
-        function getQueryVariable(variable) {
-            var query = window.location.search.substring(1);
-            var vars = query.split("&");
-            for (var i = 0; i < vars.length; i++) {
-                var pair = vars[i].split("=");
-                if (pair[0] == variable) {
-                    return pair[1];
-                }
-            }
-            return NaN;
-        }
-
-        function setBarValue(name, value) {
-            var innerel = document.getElementById(name);
-            var outerel = document.getElementById("bar-" + name);
-            if (outerel) outerel.style.width = value + "%";
-            if (innerel) innerel.innerHTML = value + "%";
-        }
-
-        var econArray = ["Коммунист", "Социалист", "Социальный", "Центрист", "Рыночный", "Капиталист", "Либертарианец"];
-        var diplArray = ["Космополит", "Интернационалист", "Мирный", "Сбалансированный", "Патриотичный", "Националист", "Шовинист"];
-        var govtArray = ["Анархист", "Либертарианец", "Либеральный", "Умеренный", "Этатист", "Авторитарный", "Тоталитарный"];
-        var sctyArray = ["Революционный", "Очень прогрессивный", "Прогрессивный", "Нейтральный", "Традиционный", "Очень традиционный", "Реакционный"];
-
-        function setLabel(val, ary) {
-            if (val > 100) return "";
-            if (val > 90) return ary[0];
-            if (val > 75) return ary[1];
-            if (val > 60) return ary[2];
-            if (val >= 40) return ary[3];
-            if (val >= 25) return ary[4];
-            if (val >= 10) return ary[5];
-            if (val >= 0) return ary[6];
-            return "";
-        }
-
-        // Инициализация результатов
-        function initResults() {
-            var equality = parseFloat(getQueryVariable("e"));
-            var peace = parseFloat(getQueryVariable("d"));
-            var liberty = parseFloat(getQueryVariable("g"));
-            var progress = parseFloat(getQueryVariable("s"));
-            var wealth = (100 - equality).toFixed(1);
-            var might = (100 - peace).toFixed(1);
-            var authority = (100 - liberty).toFixed(1);
-            var tradition = (100 - progress).toFixed(1);
-
-            testResults = {
-                equality: parseFloat(equality),
-                wealth: parseFloat(wealth),
-                peace: parseFloat(peace),
-                might: parseFloat(might),
-                liberty: parseFloat(liberty),
-                authority: parseFloat(authority),
-                progress: parseFloat(progress),
-                tradition: parseFloat(tradition)
-            };
-
-            setBarValue("equality", equality);
-            setBarValue("wealth", wealth);
-            setBarValue("peace", peace);
-            setBarValue("might", might);
-            setBarValue("liberty", liberty);
-            setBarValue("authority", authority);
-            setBarValue("progress", progress);
-            setBarValue("tradition", tradition);
-
-            document.getElementById("economic-label").innerHTML = setLabel(equality, econArray);
-            document.getElementById("diplomatic-label").innerHTML = setLabel(peace, diplArray);
-            document.getElementById("state-label").innerHTML = setLabel(liberty, govtArray);
-            document.getElementById("society-label").innerHTML = setLabel(progress, sctyArray);
-
-            var ideology = "";
-            var ideodist = Infinity;
-            for (var i = 0; i < ideologies.length; i++) {
-                var dist = 0;
-                dist += Math.pow(Math.abs(ideologies[i].stats.econ - equality), 2);
-                dist += Math.pow(Math.abs(ideologies[i].stats.govt - liberty), 2);
-                dist += Math.pow(Math.abs(ideologies[i].stats.dipl - peace), 1.73856063);
-                dist += Math.pow(Math.abs(ideologies[i].stats.scty - progress), 1.73856063);
-                if (dist < ideodist) {
-                    ideology = ideologies[i].name;
-                    ideodist = dist;
-                }
-            }
-            
-            testResults.ideology = ideology;
-            document.getElementById("ideology-result").innerHTML = "Ваша идеология: <strong>" + ideology + "</strong>";
-            
-            updateTimerInfo();
-        }
+        // ... ваши существующие функции initResults, updateTimerInfo, retakeTest ...
         
-        // Обновление информации о таймере
-        function updateTimerInfo() {
-            const lastTestTime = localStorage.getItem('lastTestTime');
-            const timerElement = document.getElementById('timerInfo');
-            
-            if (!lastTestTime) {
-                timerElement.innerHTML = '✅ Вы можете пройти тест сейчас';
-                return;
-            }
-            
-            const now = Date.now();
-            const lastTime = parseInt(lastTestTime);
-            const hours24 = 24 * 60 * 60 * 1000;
-            const timePassed = now - lastTime;
-            
-            if (timePassed >= hours24) {
-                timerElement.innerHTML = '✅ Вы можете пройти тест сейчас';
-            } else {
-                const hoursLeft = 24 - Math.floor(timePassed / (60 * 60 * 1000));
-                const minutesLeft = 60 - Math.floor((timePassed % (60 * 60 * 1000)) / (60 * 1000));
-                timerElement.innerHTML = `⏳ Следующий тест через: ${hoursLeft}ч ${minutesLeft}м`;
-            }
-        }
-        
-        // Пройти тест заново
-        function retakeTest() {
-            const lastTestTime = localStorage.getItem('lastTestTime');
-            
-            if (lastTestTime) {
-                const now = Date.now();
-                const lastTime = parseInt(lastTestTime);
-                const hours24 = 24 * 60 * 60 * 1000;
-                
-                if (now - lastTime < hours24) {
-                    const hoursLeft = 24 - Math.floor((now - lastTime) / (60 * 60 * 1000));
-                    alert(`Вы можете пройти тест повторно только через ${hoursLeft} часов`);
-                    return;
-                }
-            }
-            
-            localStorage.setItem('lastTestTime', Date.now().toString());
-            window.location.href = 'index.html#Тесты';
-        }
-        
-        // Модальные окна публикации
-        function showPublishModal() {
-            document.getElementById('usernameModal').style.display = 'flex';
-            document.getElementById('usernameInput').focus();
-            document.getElementById('usernameError').textContent = '';
-        }
-        
-        function hideUsernameModal() {
-            document.getElementById('usernameModal').style.display = 'none';
-            document.getElementById('usernameInput').value = '';
-        }
-        
-        function showPasswordModal(username) {
-            currentUsername = username;
-            document.getElementById('usernameDisplay').textContent = username;
-            document.getElementById('usernameModal').style.display = 'none';
+        // Модальное окно пароля
+        function showPasswordModal() {
             document.getElementById('passwordModal').style.display = 'flex';
             document.getElementById('userPassword').focus();
             document.getElementById('passwordError').textContent = '';
@@ -506,49 +448,10 @@
         function hidePasswordModal() {
             document.getElementById('passwordModal').style.display = 'none';
             document.getElementById('userPassword').value = '';
-            document.getElementById('usernameModal').style.display = 'flex';
         }
         
-        // Проверка никнейма
-        async function checkUsername() {
-            const username = document.getElementById('usernameInput').value.trim();
-            const errorEl = document.getElementById('usernameError');
-            
-            if (!username) {
-                errorEl.textContent = 'Введите никнейм';
-                return;
-            }
-            
-            if (username.length < 2 || username.length > 20) {
-                errorEl.textContent = 'Никнейм должен быть от 2 до 20 символов';
-                return;
-            }
-            
-            try {
-                // Проверяем, не занят ли никнейм
-                const { data, error } = await supabase
-                    .from('test_results')
-                    .select('username')
-                    .eq('username', username)
-                    .limit(1);
-                
-                if (error) throw error;
-                
-                if (data && data.length > 0) {
-                    errorEl.textContent = 'Этот никнейм уже занят';
-                    return;
-                }
-                
-                showPasswordModal(username);
-                
-            } catch (error) {
-                console.error('Ошибка проверки никнейма:', error);
-                errorEl.textContent = 'Ошибка проверки';
-            }
-        }
-        
-        // Проверка пароля
-        async function checkPassword() {
+        // Проверка пароля и публикация
+        async function checkPasswordAndPublish() {
             const password = document.getElementById('userPassword').value;
             const errorEl = document.getElementById('passwordError');
             
@@ -561,43 +464,74 @@
                 errorEl.textContent = 'Проверка пароля...';
                 errorEl.style.color = '#ffa500';
                 
-                // Проверяем пароль в базе данных
-                const { data, error } = await supabase
-                    .from('user_passwords')
-                    .select('username, password')
-                    .eq('username', currentUsername)
+                // Ищем пользователя по паролю
+                const { data: user, error } = await supabase
+                    .from('users')
+                    .select('*')
                     .eq('password', password)
                     .single();
                 
-                if (error || !data) {
+                if (error || !user) {
                     errorEl.textContent = 'Неверный пароль или пользователь не найден';
                     errorEl.style.color = '#ff4444';
                     return;
                 }
                 
-                // Пароль верный, публикуем результаты
-                await publishResults();
+                currentUser = user;
+                
+                // Обновляем статистику пользователя
+                await updateUserStats(user.id);
+                
+                // Публикуем результаты
+                await publishResults(user.username);
                 
             } catch (error) {
                 console.error('Ошибка проверки пароля:', error);
-                errorEl.textContent = 'Ошибка проверки пароля';
+                errorEl.textContent = 'Ошибка: ' + error.message;
                 errorEl.style.color = '#ff4444';
             }
         }
         
+        // Обновление статистики пользователя
+        async function updateUserStats(userId) {
+            try {
+                const { data: user, error } = await supabase
+                    .from('users')
+                    .select('tests_taken')
+                    .eq('id', userId)
+                    .single();
+                
+                if (error) throw error;
+                
+                const newTestsTaken = (user.tests_taken || 0) + 1;
+                
+                const { error: updateError } = await supabase
+                    .from('users')
+                    .update({
+                        tests_taken: newTestsTaken,
+                        last_test: new Date().toISOString()
+                    })
+                    .eq('id', userId);
+                
+                if (updateError) throw updateError;
+                
+            } catch (error) {
+                console.error('Ошибка обновления статистики:', error);
+            }
+        }
+        
         // Публикация результатов
-        async function publishResults() {
+        async function publishResults(username) {
             const errorEl = document.getElementById('passwordError');
             
             try {
                 errorEl.textContent = 'Публикация результатов...';
                 errorEl.style.color = '#ffa500';
                 
-                // Сохраняем результаты
                 const { data, error } = await supabase
                     .from('test_results')
                     .insert([{
-                        username: currentUsername,
+                        username: username,
                         equality: testResults.equality,
                         wealth: testResults.wealth,
                         peace: testResults.peace,
@@ -613,12 +547,11 @@
                 
                 if (error) throw error;
                 
-                errorEl.textContent = '✅ Результаты опубликованы!';
+                errorEl.textContent = 'Результаты опубликованы!';
                 errorEl.style.color = '#4CAF50';
                 
-                // Через 2 секунды переходим к результатам
                 setTimeout(() => {
-                    document.getElementById('passwordModal').style.display = 'none';
+                    hidePasswordModal();
                     window.location.href = 'test-results.html';
                 }, 2000);
                 
@@ -629,26 +562,18 @@
             }
         }
         
-        // Инициализация при загрузке
+        // Инициализация
         document.addEventListener('DOMContentLoaded', function() {
-            initResults();
+            // ... ваш существующий код инициализации ...
             
-            // Закрытие модальных окон при клике вне их
-            document.getElementById('usernameModal').addEventListener('click', function(e) {
-                if (e.target === this) hideUsernameModal();
-            });
-            
+            // Закрытие модального окна при клике вне его
             document.getElementById('passwordModal').addEventListener('click', function(e) {
                 if (e.target === this) hidePasswordModal();
             });
             
-            // Enter для форм
-            document.getElementById('usernameInput').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') checkUsername();
-            });
-            
+            // Enter для отправки формы
             document.getElementById('userPassword').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') checkPassword();
+                if (e.key === 'Enter') checkPasswordAndPublish();
             });
         });
     </script>
