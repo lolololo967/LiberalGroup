@@ -5,14 +5,6 @@ const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZ
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 let isAdmin = false;
 
-// Получаем пароль админа из переменных окружения Vercel
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 
-                      import.meta.env?.VITE_ADMIN_PASSWORD || 
-                      window.__ENV?.ADMIN_PASSWORD || 
-                      'admin123'; // fallback для разработки
-
-console.log('Admin password loaded:', ADMIN_PASSWORD ? '***' : 'NOT SET');
-
 function showStatus(message, type = 'info') {
     const statusElement = document.getElementById('statusMessage');
     if (statusElement) {
@@ -130,7 +122,7 @@ function toggleEditMode(enable) {
     }
 }
 
-// ============ ФУНКЦИИ ДЛЯ УПРАВЛЕНИЯ ПОЛЬЗОВАТЕЛЯМИ ============
+// ФУНКЦИИ ДЛЯ УПРАВЛЕНИЯ ПОЛЬЗОВАТЕЛЯМИ
 
 function toggleUserManager(show) {
     const userPanel = document.getElementById('userManagerPanel');
@@ -186,10 +178,8 @@ async function loadUserList() {
         
     } catch (error) {
         console.error('Ошибка загрузки пользователей:', error);
-        const userList = document.getElementById('userList');
-        if (userList) {
-            userList.innerHTML = '<p style="color: #ff4444; padding: 10px;">Ошибка: ' + error.message + '</p>';
-        }
+        document.getElementById('userList').innerHTML = 
+            '<p style="color: #ff4444; padding: 10px;">Ошибка: ' + error.message + '</p>';
     }
 }
 
@@ -257,20 +247,11 @@ async function deleteUser(userId) {
     if (!confirm('Удалить этого пользователя и все его результаты?')) return;
     
     try {
-        // Сначала получаем имя пользователя
-        const { data: userData } = await supabase
-            .from('users')
-            .select('username')
-            .eq('id', userId)
-            .single();
-        
-        if (userData) {
-            // Удаляем результаты тестов пользователя
-            await supabase
-                .from('test_results')
-                .delete()
-                .eq('username', userData.username);
-        }
+        // Сначала удаляем результаты тестов пользователя
+        const { error: resultsError } = await supabase
+            .from('test_results')
+            .delete()
+            .eq('username', 'username_placeholder'); // Нужно сначала получить имя пользователя
         
         // Затем удаляем самого пользователя
         const { error } = await supabase
@@ -321,37 +302,124 @@ function escapeHtml(text) {
     return div.innerHTML;
 }
 
-// ============ СОЗДАНИЕ ПАНЕЛИ УПРАВЛЕНИЯ ПОЛЬЗОВАТЕЛЯМИ ============
+// ОСНОВНАЯ ИНИЦИАЛИЗАЦИЯ
 
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Админ панель загружена');
+    
+    loadContent();
+    
+    const adminLoginBtn = document.getElementById('adminLoginBtn');
+    const loginBtn = document.getElementById('loginBtn');
+    const cancelBtn = document.getElementById('cancelBtn');
+    const publishBtn = document.getElementById('publishBtn');
+    const logoutBtn = document.getElementById('logoutBtn');
+    
+    // Вход в админ-панель
+    adminLoginBtn.addEventListener('click', function() {
+        document.getElementById('loginModal').classList.remove('admins-hidden');
+        document.getElementById('passwordInput').value = '';
+        document.getElementById('passwordInput').focus();
+    });
+
+    // Кнопка входа
+    loginBtn.addEventListener('click', function() {
+        const password = document.getElementById('passwordInput').value;
+        
+        // Пароль админа - измените на свой
+        const ADMIN_PASSWORD = 'admin123';
+        
+        if (password === ADMIN_PASSWORD) {
+            isAdmin = true;
+            document.getElementById('loginModal').classList.add('admins-hidden');
+            toggleEditMode(true);
+            console.log('Успешный вход в админ-панель');
+            
+            // Создаем панель управления пользователями
+            createUserManagerPanel();
+            
+            // Добавляем кнопку управления пользователями
+            addUserManagerButton();
+            
+        } else {
+            alert('Неверный пароль');
+            document.getElementById('passwordInput').focus();
+            document.getElementById('passwordInput').select();
+        }
+    });
+
+    cancelBtn.addEventListener('click', function() {
+        document.getElementById('loginModal').classList.add('admins-hidden');
+    });
+
+    publishBtn.addEventListener('click', publishChanges);
+
+    logoutBtn.addEventListener('click', function() {
+        isAdmin = false;
+        toggleEditMode(false);
+        loadContent();
+    });
+
+    // Enter для ввода пароля
+    document.getElementById('passwordInput').addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+            loginBtn.click();
+        }
+    });
+
+    // Закрытие модального окна
+    document.getElementById('loginModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            document.getElementById('loginModal').classList.add('admins-hidden');
+        }
+    });
+
+    // Режим реального времени
+    supabase
+        .channel('public:site_content')
+        .on('postgres_changes', 
+            { event: '*', schema: 'public', table: 'site_content' }, 
+            (payload) => {
+                if (!isAdmin) {
+                    const newData = payload.new;
+                    const elements = document.querySelectorAll(`[data-content-key="${newData.content_key}"]`);
+                    elements.forEach(element => {
+                        element.textContent = newData.content_value;
+                    });
+                }
+            }
+        )
+        .subscribe();
+});
+
+// Создание панели управления пользователями
 function createUserManagerPanel() {
     if (document.getElementById('userManagerPanel')) return;
     
     const userPanelHTML = `
-        <div id="userManagerPanel" class="admins-admin-panel admins-hidden" style="position: fixed; top: 100px; right: 20px; width: 500px; max-height: 80vh; overflow-y: auto; z-index: 10001;">
-            <div class="admins-panel-header" style="cursor: move;">
+        <div id="userManagerPanel" class="user-manager-panel admins-hidden">
+            <div class="admins-panel-header">
                 <h3>Управление пользователями</h3>
-                <button onclick="toggleUserManager(false)" class="admins-btn-small" style="padding: 4px 8px;">X</button>
+                <button onclick="toggleUserManager(false)" class="admins-btn-small">X</button>
             </div>
             
-            <div style="padding: 15px;">
-                <div style="margin-bottom: 20px;">
-                    <h4 style="color: #ffa500; margin-bottom: 10px; font-weight: 100;">Добавить нового пользователя</h4>
-                    <div style="display: flex; flex-direction: column; gap: 10px;">
-                        <input type="text" id="newUsername" class="admins-input-field" placeholder="Имя пользователя" maxlength="20">
-                        <div style="display: flex; gap: 5px;">
-                            <input type="text" id="newPassword" class="admins-input-field" placeholder="Пароль" style="flex: 1;">
-                            <button onclick="generatePassword()" class="admins-btn-small" type="button">Сгенерировать</button>
-                        </div>
-                        <button onclick="addNewUser()" class="admins-btn admins-btn-success">Добавить пользователя</button>
-                        <div id="userError" style="margin-top: 10px; min-height: 20px;"></div>
+            <div class="user-manager-section">
+                <h4>Добавить нового пользователя</h4>
+                <div class="user-form">
+                    <input type="text" id="newUsername" class="admins-input-field" placeholder="Имя пользователя" maxlength="20">
+                    <div class="user-input-group">
+                        <input type="text" id="newPassword" class="admins-input-field" placeholder="Пароль">
+                        <button onclick="generatePassword()" class="admins-btn-small" type="button">Сгенерировать</button>
                     </div>
+                    <button onclick="addNewUser()" class="admins-btn admins-btn-success">Добавить пользователя</button>
+                    <div id="userError" style="margin-top: 10px; min-height: 20px;"></div>
                 </div>
-                
-                <div>
-                    <h4 style="color: #ffa500; margin-bottom: 10px; font-weight: 100;">Существующие пользователи</h4>
-                    <div id="userList" style="max-height: 300px; overflow-y: auto; margin-top: 10px;">
-                        <p style="color: #ffa500; padding: 10px;">Загрузка...</p>
-                    </div>
+            </div>
+            
+            <div class="user-manager-section">
+                <h4>Существующие пользователи</h4>
+                <div id="userList" class="user-list">
+                    <p style="color: #ffa500; padding: 10px;">Загрузка...</p>
                 </div>
             </div>
         </div>
@@ -361,9 +429,78 @@ function createUserManagerPanel() {
     panel.innerHTML = userPanelHTML;
     document.body.appendChild(panel);
     
-    // Добавляем стили
+    addUserManagerStyles();
+}
+
+// Добавление кнопки управления пользователями
+function addUserManagerButton() {
+    const userBtn = document.createElement('button');
+    userBtn.innerHTML = 'Управление пользователями';
+    userBtn.className = 'admins-btn admins-btn-primary';
+    userBtn.style.marginTop = '10px';
+    userBtn.onclick = () => toggleUserManager(true);
+    
+    const controls = document.querySelector('.admins-controls');
+    if (controls) {
+        controls.appendChild(userBtn);
+    }
+}
+
+// Добавление стилей
+function addUserManagerStyles() {
     const style = document.createElement('style');
     style.textContent = `
+        .user-manager-panel {
+            position: fixed;
+            top: 70px;
+            left: 20px;
+            width: 400px;
+            max-height: 80vh;
+            overflow-y: auto;
+            background: rgba(1, 1, 1, 0.95);
+            border: 1px solid #ffa500;
+            z-index: 9999;
+            padding: 20px;
+            backdrop-filter: blur(3px);
+            clip-path: polygon(0 0, 99% 1%, 100% 100%, 1% 99%);
+        }
+        
+        .user-manager-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid rgba(255, 165, 0, 0.3);
+            background: rgba(0, 0, 0, 0.5);
+        }
+        
+        .user-manager-section h4 {
+            color: #ffa500;
+            margin-bottom: 15px;
+            font-weight: 100;
+            border-bottom: 1px dashed rgba(255, 165, 0, 0.3);
+            padding-bottom: 5px;
+        }
+        
+        .user-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .user-input-group {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .user-input-group input {
+            flex: 1;
+        }
+        
+        .user-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
+        
         .user-item {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 165, 0, 0.2);
@@ -416,238 +553,12 @@ function createUserManagerPanel() {
             color: #888;
             text-align: right;
         }
+        
+        .admins-btn-small {
+            padding: 4px 8px !important;
+            font-size: 12px !important;
+            border: 1px solid #666 !important;
+        }
     `;
     document.head.appendChild(style);
-    
-    // Добавляем возможность перетаскивания
-    makeDraggable(document.getElementById('userManagerPanel'));
 }
-
-// ============ ДОБАВЛЕНИЕ КНОПКИ УПРАВЛЕНИЯ ПОЛЬЗОВАТЕЛЯМИ ============
-
-function addUserManagerButton() {
-    const userBtn = document.createElement('button');
-    userBtn.innerHTML = '👥 Управление пользователями';
-    userBtn.className = 'admins-btn admins-btn-primary';
-    userBtn.style.marginTop = '10px';
-    userBtn.style.width = '100%';
-    userBtn.onclick = () => toggleUserManager(true);
-    
-    const controls = document.querySelector('.admins-controls');
-    if (controls) {
-        // Вставляем кнопку перед кнопкой "Выйти"
-        const logoutBtn = document.getElementById('logoutBtn');
-        if (logoutBtn) {
-            controls.insertBefore(userBtn, logoutBtn);
-        } else {
-            controls.appendChild(userBtn);
-        }
-    }
-}
-
-// ============ ФУНКЦИЯ ДЛЯ ПЕРЕТАСКИВАНИЯ ПАНЕЛЕЙ ============
-
-function makeDraggable(element) {
-    let isDragging = false;
-    let currentX;
-    let currentY;
-    let initialX;
-    let initialY;
-    let xOffset = 0;
-    let yOffset = 0;
-
-    const header = element.querySelector('.admins-panel-header');
-    
-    if (!header) return;
-    
-    header.style.cursor = 'move';
-    
-    header.addEventListener('mousedown', dragStart);
-    document.addEventListener('mousemove', drag);
-    document.addEventListener('mouseup', dragEnd);
-    
-    function dragStart(e) {
-        initialX = e.clientX - xOffset;
-        initialY = e.clientY - yOffset;
-        
-        if (e.target === header || header.contains(e.target)) {
-            isDragging = true;
-        }
-    }
-    
-    function drag(e) {
-        if (isDragging) {
-            e.preventDefault();
-            currentX = e.clientX - initialX;
-            currentY = e.clientY - initialY;
-            
-            xOffset = currentX;
-            yOffset = currentY;
-            
-            element.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
-        }
-    }
-    
-    function dragEnd() {
-        initialX = currentX;
-        initialY = currentY;
-        isDragging = false;
-    }
-}
-
-// ============ ОСНОВНАЯ ИНИЦИАЛИЗАЦИЯ ============
-
-document.addEventListener('DOMContentLoaded', function() {
-    console.log('Админ панель загружена');
-    console.log('Admin password available:', ADMIN_PASSWORD ? 'YES' : 'NO');
-    
-    // Проверяем, доступен ли пароль админа
-    if (!ADMIN_PASSWORD || ADMIN_PASSWORD === 'admin123') {
-        console.warn('ВНИМАНИЕ: ADMIN_PASSWORD не установлен или используется пароль по умолчанию!');
-        console.warn('Установите переменную окружения ADMIN_PASSWORD в настройках Vercel');
-    }
-    
-    loadContent();
-    
-    // Проверяем существование элементов перед добавлением обработчиков
-    const adminLoginBtn = document.getElementById('adminLoginBtn');
-    const loginBtn = document.getElementById('loginBtn');
-    const cancelBtn = document.getElementById('cancelBtn');
-    const publishBtn = document.getElementById('publishBtn');
-    const logoutBtn = document.getElementById('logoutBtn');
-    
-    // Вход в админ-панель
-    if (adminLoginBtn) {
-        adminLoginBtn.addEventListener('click', function() {
-            const loginModal = document.getElementById('loginModal');
-            if (loginModal) {
-                loginModal.classList.remove('admins-hidden');
-                const passwordInput = document.getElementById('passwordInput');
-                if (passwordInput) {
-                    passwordInput.value = '';
-                    passwordInput.focus();
-                }
-            }
-        });
-    } else {
-        console.error('Кнопка adminLoginBtn не найдена!');
-    }
-
-    // Кнопка входа
-    if (loginBtn) {
-        loginBtn.addEventListener('click', function() {
-            const passwordInput = document.getElementById('passwordInput');
-            if (!passwordInput) return;
-            
-            const password = passwordInput.value;
-            
-            if (!ADMIN_PASSWORD || ADMIN_PASSWORD === '') {
-                alert('Системная ошибка: пароль администратора не настроен');
-                return;
-            }
-            
-            if (password === ADMIN_PASSWORD) {
-                isAdmin = true;
-                const loginModal = document.getElementById('loginModal');
-                if (loginModal) {
-                    loginModal.classList.add('admins-hidden');
-                }
-                toggleEditMode(true);
-                console.log('Успешный вход в админ-панель');
-                
-                // Создаем панель управления пользователями
-                createUserManagerPanel();
-                
-                // Добавляем кнопку управления пользователями
-                addUserManagerButton();
-                
-            } else {
-                alert('Неверный пароль');
-                if (passwordInput) {
-                    passwordInput.focus();
-                    passwordInput.select();
-                }
-            }
-        });
-    }
-
-    if (cancelBtn) {
-        cancelBtn.addEventListener('click', function() {
-            const loginModal = document.getElementById('loginModal');
-            if (loginModal) {
-                loginModal.classList.add('admins-hidden');
-            }
-        });
-    }
-
-    if (publishBtn) {
-        publishBtn.addEventListener('click', publishChanges);
-    }
-
-    if (logoutBtn) {
-        logoutBtn.addEventListener('click', function() {
-            isAdmin = false;
-            toggleEditMode(false);
-            loadContent();
-            
-            // Скрываем панель управления пользователями
-            const userPanel = document.getElementById('userManagerPanel');
-            if (userPanel) {
-                userPanel.classList.add('admins-hidden');
-            }
-        });
-    }
-
-    // Enter для ввода пароля
-    const passwordInput = document.getElementById('passwordInput');
-    if (passwordInput) {
-        passwordInput.addEventListener('keypress', function(e) {
-            if (e.key === 'Enter' && loginBtn) {
-                loginBtn.click();
-            }
-        });
-    }
-
-    // Закрытие модального окна
-    const loginModal = document.getElementById('loginModal');
-    if (loginModal) {
-        loginModal.addEventListener('click', function(e) {
-            if (e.target === this) {
-                this.classList.add('admins-hidden');
-            }
-        });
-    }
-
-    // Режим реального времени
-    supabase
-        .channel('public:site_content')
-        .on('postgres_changes', 
-            { event: '*', schema: 'public', table: 'site_content' }, 
-            (payload) => {
-                if (!isAdmin) {
-                    const newData = payload.new;
-                    const elements = document.querySelectorAll(`[data-content-key="${newData.content_key}"]`);
-                    elements.forEach(element => {
-                        element.textContent = newData.content_value;
-                    });
-                }
-            }
-        )
-        .subscribe();
-    
-    // Делаем существующую админ-панель перетаскиваемой
-    const adminPanel = document.getElementById('adminPanel');
-    if (adminPanel) {
-        makeDraggable(adminPanel);
-    }
-});
-
-// Экспортируем функции для использования в HTML
-window.toggleUserManager = toggleUserManager;
-window.loadUserList = loadUserList;
-window.addNewUser = addNewUser;
-window.deleteUser = deleteUser;
-window.copyPassword = copyPassword;
-window.copyUserInfo = copyUserInfo;
-window.generatePassword = generatePassword;
-window.escapeHtml = escapeHtml;
