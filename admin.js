@@ -1,5 +1,5 @@
 // admin.js - управление пользователями (никнейм + пароль)
-const SUPABASE_URL = 'https://eqkanneloooeopkhhpuc.supabase.co';
+const SUPABASE_URL = https://client.falixnodes.net/verypleasedisable';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxa2FubmVsb29vZW9wa2hocHVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ5MDk1MDgsImV4cCI6MjA4MDQ4NTUwOH0.EL7ZR9iyRSPIOYudaFWDQC4z1hXzu0PPtE1McoVvGp0';
 
 const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
