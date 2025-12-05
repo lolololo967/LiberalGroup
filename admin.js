@@ -1,34 +1,32 @@
-// admin.js - управление пользователями (никнейм + пароль)
+// admin.js - управление пользователями без эмодзи
 const SUPABASE_URL = 'https://eqkanneloooeopkhhpuc.supabase.co';
 const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxa2FubmVsb29vZW9wa2hocHVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ5MDk1MDgsImV4cCI6MjA4MDQ4NTUwOH0.EL7ZR9iyRSPIOYudaFWDQC4z1hXzu0PPtE1McoVvGp0';
 
-// Создаем клиент с настройками CORS
-const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
-    headers: {
-        'apikey': SUPABASE_KEY,
-        'Content-Type': 'application/json',
+// Создаем клиент Supabase с правильными настройками
+let supabase;
+try {
+    if (window.supabase) {
+        supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY, {
+            auth: {
+                persistSession: false,
+                autoRefreshToken: false
+            },
+            global: {
+                headers: {
+                    'apikey': SUPABASE_KEY
+                }
+            }
+        });
+    } else {
+        console.error('Supabase client не найден');
     }
-});
+} catch (error) {
+    console.error('Ошибка создания Supabase клиента:', error);
+}
 
+// Пароль администратора
+let ADMIN_PASSWORD = 'admin123'; // По умолчанию для разработки
 let isAdmin = false;
-
-// Получаем пароль админа из переменных окружения Vercel
-const ADMIN_PASSWORD = (() => {
-    // Пробуем получить из глобальных переменных Vercel
-    if (typeof window !== 'undefined' && window.ENV && window.ENV.ADMIN_PASSWORD) {
-        return window.ENV.ADMIN_PASSWORD;
-    }
-    
-    // Для локальной разработки
-    if (typeof window !== 'undefined' && window.location.hostname === 'localhost') {
-        return 'admin123'; // ваш локальный пароль
-    }
-    
-    // Fallback (удалите в продакшене)
-    return 'admin123';
-})();
-
-console.log('Admin password loaded:', ADMIN_PASSWORD ? 'YES' : 'NO');
 
 // ============ УТИЛИТЫ ============
 function showStatus(message, type = 'info') {
@@ -37,82 +35,120 @@ function showStatus(message, type = 'info') {
         statusElement.textContent = message;
         statusElement.className = 'admins-status admins-' + type;
     }
-    // Также показываем уведомление
-    showNotification(message, type);
 }
 
-function showNotification(message, type = 'info') {
-    // Удаляем старые уведомления
-    const oldNotifications = document.querySelectorAll('.admin-notification');
-    oldNotifications.forEach(n => n.remove());
+function escapeHtml(text) {
+    if (!text) return '';
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+function formatDate(dateString, showTime = false) {
+    if (!dateString) return 'никогда';
+    try {
+        const date = new Date(dateString);
+        if (showTime) {
+            return date.toLocaleDateString('ru-RU') + ' ' + date.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
+        }
+        return date.toLocaleDateString('ru-RU');
+    } catch (e) {
+        return 'неверная дата';
+    }
+}
+
+function showAlert(message, type = 'info') {
+    // Удаляем старые алерты
+    const oldAlerts = document.querySelectorAll('.custom-alert');
+    oldAlerts.forEach(alert => alert.remove());
     
-    const notification = document.createElement('div');
-    notification.className = `admin-notification admin-notification-${type}`;
-    notification.innerHTML = `
-        <div class="admin-notification-content">
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `custom-alert custom-alert-${type}`;
+    alertDiv.innerHTML = `
+        <div class="alert-content">
             ${message}
-            <button onclick="this.parentElement.parentElement.remove()" style="margin-left: 10px; background: none; border: none; color: white; cursor: pointer;">×</button>
+            <button class="alert-close" onclick="this.parentElement.parentElement.remove()">X</button>
         </div>
     `;
     
-    document.body.appendChild(notification);
+    document.body.appendChild(alertDiv);
     
-    // Автоматическое скрытие через 5 секунд
+    // Автоудаление через 5 секунд
     setTimeout(() => {
-        if (notification.parentElement) {
-            notification.remove();
+        if (alertDiv.parentElement) {
+            alertDiv.remove();
         }
     }, 5000);
 }
 
-// ============ СТИЛИ ДЛЯ УВЕДОМЛЕНИЙ ============
-function addNotificationStyles() {
-    if (!document.querySelector('#admin-notification-styles')) {
+// ============ СТИЛИ ============
+function addStyles() {
+    if (!document.querySelector('#admin-custom-styles')) {
         const style = document.createElement('style');
-        style.id = 'admin-notification-styles';
+        style.id = 'admin-custom-styles';
         style.textContent = `
-            .admin-notification {
+            .custom-alert {
                 position: fixed;
                 top: 20px;
                 right: 20px;
                 padding: 15px 20px;
-                border-radius: 4px;
+                border-radius: 5px;
                 color: white;
                 font-weight: bold;
                 z-index: 99999;
                 min-width: 300px;
-                max-width: 400px;
+                max-width: 500px;
                 box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-                animation: slideIn 0.3s ease-out;
+                animation: slideInRight 0.3s ease-out;
             }
             
-            .admin-notification-content {
+            .alert-content {
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
             }
             
-            .admin-notification-success {
-                background: linear-gradient(135deg, #4CAF50, #2E7D32);
+            .alert-close {
+                background: none;
+                border: none;
+                color: white;
+                font-size: 18px;
+                cursor: pointer;
+                margin-left: 15px;
+                padding: 0;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                opacity: 0.8;
+            }
+            
+            .alert-close:hover {
+                opacity: 1;
+            }
+            
+            .custom-alert-success {
+                background: #4CAF50;
                 border-left: 5px solid #2E7D32;
             }
             
-            .admin-notification-error {
-                background: linear-gradient(135deg, #f44336, #c62828);
+            .custom-alert-error {
+                background: #f44336;
                 border-left: 5px solid #c62828;
             }
             
-            .admin-notification-info {
-                background: linear-gradient(135deg, #2196F3, #1565C0);
+            .custom-alert-info {
+                background: #2196F3;
                 border-left: 5px solid #1565C0;
             }
             
-            .admin-notification-warning {
-                background: linear-gradient(135deg, #ff9800, #ef6c00);
+            .custom-alert-warning {
+                background: #ff9800;
                 border-left: 5px solid #ef6c00;
             }
             
-            @keyframes slideIn {
+            @keyframes slideInRight {
                 from {
                     transform: translateX(100%);
                     opacity: 0;
@@ -122,53 +158,200 @@ function addNotificationStyles() {
                     opacity: 1;
                 }
             }
+            
+            .user-item {
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid rgba(255, 165, 0, 0.3);
+                border-radius: 6px;
+                padding: 15px;
+                margin-bottom: 10px;
+                transition: all 0.3s ease;
+            }
+            
+            .user-item:hover {
+                border-color: rgba(255, 165, 0, 0.6);
+                box-shadow: 0 2px 8px rgba(255, 165, 0, 0.2);
+            }
+            
+            .user-header {
+                display: flex;
+                align-items: center;
+                margin-bottom: 10px;
+            }
+            
+            .user-avatar {
+                width: 40px;
+                height: 40px;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                color: white;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                font-size: 18px;
+                margin-right: 12px;
+            }
+            
+            .user-info {
+                flex: 1;
+            }
+            
+            .user-name {
+                color: #ffa500;
+                margin: 0 0 5px 0;
+                font-size: 16px;
+                font-weight: 600;
+            }
+            
+            .user-password {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 14px;
+            }
+            
+            .user-password code {
+                background: rgba(0, 0, 0, 0.3);
+                padding: 3px 8px;
+                border-radius: 4px;
+                font-family: monospace;
+                color: #4CAF50;
+                font-weight: bold;
+            }
+            
+            .copy-btn {
+                background: none;
+                border: 1px solid #4CAF50;
+                color: #4CAF50;
+                padding: 2px 8px;
+                border-radius: 3px;
+                cursor: pointer;
+                font-size: 12px;
+            }
+            
+            .copy-btn:hover {
+                background: rgba(76, 175, 80, 0.1);
+            }
+            
+            .user-stats {
+                display: flex;
+                justify-content: space-between;
+                background: rgba(0, 0, 0, 0.2);
+                padding: 8px;
+                border-radius: 4px;
+                margin: 10px 0;
+            }
+            
+            .stat {
+                text-align: center;
+                flex: 1;
+            }
+            
+            .stat strong {
+                display: block;
+                color: white;
+                font-size: 14px;
+            }
+            
+            .stat small {
+                color: #aaa;
+                font-size: 11px;
+            }
+            
+            .user-actions {
+                display: flex;
+                gap: 8px;
+                margin-top: 10px;
+            }
+            
+            .action-btn {
+                flex: 1;
+                padding: 8px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 13px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 5px;
+                transition: all 0.2s ease;
+            }
+            
+            .action-btn:hover {
+                transform: translateY(-1px);
+            }
+            
+            .copy-all {
+                background: #2196F3;
+                color: white;
+            }
+            
+            .copy-all:hover {
+                background: #1976D2;
+            }
+            
+            .delete-btn {
+                background: #f44336;
+                color: white;
+            }
+            
+            .delete-btn:hover {
+                background: #d32f2f;
+            }
+            
+            .user-item:last-child {
+                margin-bottom: 0;
+            }
+            
+            .users-empty {
+                text-align: center;
+                padding: 40px 20px;
+                color: #ffa500;
+            }
+            
+            .users-loading {
+                text-align: center;
+                padding: 20px;
+                color: #ffa500;
+            }
+            
+            .users-error {
+                text-align: center;
+                padding: 20px;
+                color: #f44336;
+                background: rgba(244, 67, 54, 0.1);
+                border-radius: 4px;
+                margin: 10px 0;
+            }
         `;
         document.head.appendChild(style);
     }
 }
 
-// ============ ОБРАБОТКА ОШИБОК ============
-async function handleSupabaseError(operation, error) {
-    console.error(`Ошибка ${operation}:`, error);
-    
-    let errorMessage = `Ошибка ${operation}: `;
-    
-    if (error.message && error.message.includes('Failed to fetch')) {
-        errorMessage += 'Нет соединения с сервером. Проверьте интернет-соединение.';
-    } else if (error.code === '23505') {
-        errorMessage += 'Запись уже существует.';
-    } else if (error.message) {
-        errorMessage += error.message;
-    } else {
-        errorMessage += 'Неизвестная ошибка сервера.';
-    }
-    
-    showStatus(errorMessage, 'error');
-    return null;
-}
-
-// ============ УПРАВЛЕНИЕ ПОЛЬЗОВАТЕЛЯМИ ============
+// ============ ФУНКЦИИ ДЛЯ РАБОТЫ С ПОЛЬЗОВАТЕЛЯМИ ============
 async function loadUserList() {
+    const userList = document.getElementById('userList');
+    if (!userList) return;
+    
+    userList.innerHTML = '<div class="users-loading">Загрузка пользователей...</div>';
+    
     try {
-        showNotification('Загрузка пользователей...', 'info');
-        
         const { data: users, error } = await supabase
             .from('users')
             .select('*')
             .order('created_at', { ascending: false });
         
         if (error) {
-            throw error;
+            throw new Error(error.message || 'Ошибка загрузки пользователей');
         }
-        
-        const userList = document.getElementById('userList');
-        if (!userList) return;
         
         if (!users || users.length === 0) {
             userList.innerHTML = `
-                <div style="text-align: center; padding: 30px; color: #ffa500;">
-                    <p>Нет созданных пользователей</p>
-                    <small>Добавьте первого пользователя</small>
+                <div class="users-empty">
+                    <p style="font-size: 16px; margin-bottom: 10px;">Пользователей пока нет</p>
+                    <small>Добавьте первого пользователя используя форму выше</small>
                 </div>
             `;
             return;
@@ -176,36 +359,54 @@ async function loadUserList() {
         
         const usersHTML = users.map(user => `
             <div class="user-item" data-user-id="${user.id}">
-                <div class="user-info">
-                    <strong>${escapeHtml(user.username)}</strong>
-                    <span class="user-password">${escapeHtml(user.password)}</span>
+                <div class="user-header">
+                    <div class="user-avatar">${user.username.charAt(0).toUpperCase()}</div>
+                    <div class="user-info">
+                        <h4 class="user-name">${escapeHtml(user.username)}</h4>
+                        <div class="user-password">
+                            <span>Пароль:</span>
+                            <code>${escapeHtml(user.password)}</code>
+                            <button onclick="copyPassword('${escapeHtml(user.password)}')" 
+                                    class="copy-btn" title="Копировать пароль">
+                                Копировать
+                            </button>
+                        </div>
+                    </div>
                 </div>
+                
                 <div class="user-stats">
-                    <small>Тестов пройдено: ${user.tests_taken || 0}</small>
-                    <small>Последний тест: ${user.last_test ? formatDate(user.last_test) : 'никогда'}</small>
+                    <span class="stat">
+                        <strong>${user.tests_taken || 0}</strong>
+                        <small>тестов пройдено</small>
+                    </span>
+                    <span class="stat">
+                        <strong>${user.last_test ? formatDate(user.last_test, true) : '—'}</strong>
+                        <small>последний тест</small>
+                    </span>
+                    <span class="stat">
+                        <strong>${formatDate(user.created_at, false)}</strong>
+                        <small>дата создания</small>
+                    </span>
                 </div>
+                
                 <div class="user-actions">
-                    <button onclick="copyPassword('${escapeHtml(user.password)}')" class="admins-btn-small">
-                        <span>📋</span> Пароль
+                    <button onclick="copyUserInfo('${escapeHtml(user.username)}', '${escapeHtml(user.password)}')" 
+                            class="action-btn copy-all">
+                        Копировать данные
                     </button>
-                    <button onclick="copyUserInfo('${escapeHtml(user.username)}', '${escapeHtml(user.password)}')" class="admins-btn-small">
-                        <span>👤</span> Данные
+                    <button onclick="deleteUser(${user.id}, '${escapeHtml(user.username)}')" 
+                            class="action-btn delete-btn">
+                        Удалить
                     </button>
-                    <button onclick="deleteUser(${user.id})" class="admins-btn-small admins-btn-danger">
-                        <span>🗑️</span> Удалить
-                    </button>
-                </div>
-                <div class="user-meta">
-                    <small>ID: ${user.id} • Создан: ${formatDate(user.created_at)}</small>
                 </div>
             </div>
         `).join('');
         
         userList.innerHTML = usersHTML;
-        showNotification(`Загружено ${users.length} пользователей`, 'success');
         
     } catch (error) {
-        handleSupabaseError('загрузки пользователей', error);
+        console.error('Ошибка загрузки пользователей:', error);
+        userList.innerHTML = `<div class="users-error">Ошибка: ${error.message}</div>`;
     }
 }
 
@@ -214,31 +415,35 @@ async function addNewUser() {
     const passwordInput = document.getElementById('newPassword');
     const errorElement = document.getElementById('userError');
     
+    if (!usernameInput || !passwordInput || !errorElement) return;
+    
     const username = usernameInput.value.trim();
     const password = passwordInput.value.trim();
     
     // Валидация
     if (!username || !password) {
         errorElement.textContent = 'Заполните все поля';
-        errorElement.className = 'admins-error';
+        errorElement.style.color = '#f44336';
         return;
     }
     
     if (username.length < 2 || username.length > 20) {
-        errorElement.textContent = 'Имя пользователя: 2-20 символов';
-        errorElement.className = 'admins-error';
+        errorElement.textContent = 'Имя пользователя должно быть от 2 до 20 символов';
+        errorElement.style.color = '#f44336';
+        usernameInput.focus();
         return;
     }
     
     if (password.length < 4) {
-        errorElement.textContent = 'Пароль минимум 4 символа';
-        errorElement.className = 'admins-error';
+        errorElement.textContent = 'Пароль должен быть минимум 4 символа';
+        errorElement.style.color = '#f44336';
+        passwordInput.focus();
         return;
     }
     
     try {
-        errorElement.textContent = 'Добавление...';
-        errorElement.className = 'admins-info';
+        errorElement.textContent = 'Добавление пользователя...';
+        errorElement.style.color = '#ff9800';
         
         // Проверяем существование пользователя
         const { data: existingUser } = await supabase
@@ -249,12 +454,13 @@ async function addNewUser() {
         
         if (existingUser) {
             errorElement.textContent = 'Это имя пользователя уже занято';
-            errorElement.className = 'admins-error';
+            errorElement.style.color = '#f44336';
             usernameInput.focus();
+            usernameInput.select();
             return;
         }
         
-        // Добавляем пользователя
+        // Создаем пользователя
         const { data, error } = await supabase
             .from('users')
             .insert([{
@@ -262,14 +468,24 @@ async function addNewUser() {
                 password: password,
                 created_by: 'admin',
                 tests_taken: 0,
-                created_at: new Date().toISOString()
+                created_at: new Date().toISOString(),
+                last_test: null
             }])
             .select();
         
-        if (error) throw error;
+        if (error) {
+            if (error.code === '23505') { // unique violation
+                errorElement.textContent = 'Это имя пользователя уже существует';
+                errorElement.style.color = '#f44336';
+            } else {
+                throw error;
+            }
+            return;
+        }
         
-        errorElement.textContent = '✓ Пользователь добавлен';
-        errorElement.className = 'admins-success';
+        // Успешно добавлено
+        errorElement.textContent = 'Пользователь успешно добавлен';
+        errorElement.style.color = '#4CAF50';
         
         // Очищаем поля
         usernameInput.value = '';
@@ -280,34 +496,30 @@ async function addNewUser() {
         setTimeout(() => {
             loadUserList();
             errorElement.textContent = '';
-            errorElement.className = '';
         }, 2000);
         
+        showAlert(`Пользователь "${username}" успешно создан`, 'success');
+        
     } catch (error) {
-        handleSupabaseError('добавления пользователя', error);
-        errorElement.textContent = 'Ошибка при добавлении пользователя';
-        errorElement.className = 'admins-error';
+        console.error('Ошибка добавления пользователя:', error);
+        errorElement.textContent = `Ошибка: ${error.message || 'Неизвестная ошибка'}`;
+        errorElement.style.color = '#f44336';
     }
 }
 
-async function deleteUser(userId) {
-    if (!confirm('Удалить этого пользователя и все его результаты?\n\nЭто действие нельзя отменить.')) {
+async function deleteUser(userId, username) {
+    if (!confirm(`Удалить пользователя "${username}"?\n\nВсе результаты тестов этого пользователя также будут удалены.\nЭто действие нельзя отменить.`)) {
         return;
     }
     
     try {
-        showNotification('Удаление пользователя...', 'warning');
+        showAlert(`Удаление пользователя "${username}"...`, 'warning');
         
         // Удаляем результаты тестов пользователя
-        const userItem = document.querySelector(`.user-item[data-user-id="${userId}"]`);
-        const username = userItem ? userItem.querySelector('strong').textContent : null;
-        
-        if (username) {
-            await supabase
-                .from('test_results')
-                .delete()
-                .eq('username', username);
-        }
+        await supabase
+            .from('test_results')
+            .delete()
+            .eq('username', username);
         
         // Удаляем пользователя
         const { error } = await supabase
@@ -317,55 +529,46 @@ async function deleteUser(userId) {
         
         if (error) throw error;
         
-        showNotification('Пользователь удален', 'success');
+        // Обновляем список пользователей
         loadUserList();
         
+        showAlert(`Пользователь "${username}" успешно удален`, 'success');
+        
     } catch (error) {
-        handleSupabaseError('удаления пользователя', error);
+        console.error('Ошибка удаления пользователя:', error);
+        showAlert(`Ошибка удаления: ${error.message}`, 'error');
     }
-}
-
-// ============ ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ ============
-function formatDate(dateString) {
-    if (!dateString) return 'никогда';
-    const date = new Date(dateString);
-    return date.toLocaleDateString('ru-RU', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-    });
 }
 
 function copyPassword(password) {
     navigator.clipboard.writeText(password).then(() => {
-        showNotification('Пароль скопирован в буфер обмена', 'success');
+        showAlert('Пароль скопирован в буфер обмена', 'success');
     }).catch(err => {
         console.error('Ошибка копирования:', err);
-        showNotification('Ошибка копирования', 'error');
+        showAlert('Ошибка копирования', 'error');
     });
 }
 
 function copyUserInfo(username, password) {
-    const text = `Имя пользователя: ${username}\nПароль: ${password}\n\nСообщите эти данные пользователю для входа в систему.`;
+    const text = `Данные для входа:\n\nИмя пользователя: ${username}\nПароль: ${password}\n\nСохраните эти данные для пользователя.`;
+    
     navigator.clipboard.writeText(text).then(() => {
-        showNotification('Данные пользователя скопированы', 'success');
+        showAlert(`Данные пользователя "${username}" скопированы`, 'success');
     }).catch(err => {
         console.error('Ошибка копирования:', err);
-        showNotification('Ошибка копирования', 'error');
+        showAlert('Ошибка копирования', 'error');
     });
 }
 
 function generatePassword() {
     const length = 8;
-    const charset = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+    const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let password = '';
     
-    // Добавляем хотя бы одну цифру
+    // Гарантируем наличие цифры
     password += Math.floor(Math.random() * 10);
     
-    // Добавляем остальные символы
+    // Добавляем буквы
     for (let i = 1; i < length; i++) {
         password += charset.charAt(Math.floor(Math.random() * charset.length));
     }
@@ -373,67 +576,50 @@ function generatePassword() {
     // Перемешиваем
     password = password.split('').sort(() => 0.5 - Math.random()).join('');
     
-    document.getElementById('newPassword').value = password;
-    
-    // Автоматически выделяем для удобства копирования
-    setTimeout(() => {
-        document.getElementById('newPassword').select();
-    }, 100);
-}
-
-function escapeHtml(text) {
-    const div = document.createElement('div');
-    div.textContent = text;
-    return div.innerHTML;
+    const passwordInput = document.getElementById('newPassword');
+    if (passwordInput) {
+        passwordInput.value = password;
+        passwordInput.select();
+    }
 }
 
 // ============ СОЗДАНИЕ ПАНЕЛИ УПРАВЛЕНИЯ ============
 function createUserManagerPanel() {
     if (document.getElementById('userManagerPanel')) return;
     
-    const userPanelHTML = `
-        <div id="userManagerPanel" class="admins-admin-panel admins-hidden" style="position: fixed; top: 100px; right: 20px; width: 500px; max-height: 80vh; overflow-y: auto; z-index: 10001;">
-            <div class="admins-panel-header" style="cursor: move; padding: 15px; background: rgba(255, 165, 0, 0.2);">
-                <h3 style="margin: 0; color: #ffa500;">👥 Управление пользователями</h3>
-                <button onclick="toggleUserManager(false)" class="admins-btn-small" style="padding: 5px 10px; background: transparent; border: 1px solid #ffa500; color: #ffa500;">✕</button>
+    const panelHTML = `
+        <div id="userManagerPanel" class="admins-admin-panel admins-hidden">
+            <div class="admins-panel-header">
+                <h3>Управление пользователями</h3>
+                <button onclick="toggleUserManager(false)" class="admins-btn-small">Закрыть</button>
             </div>
             
-            <div style="padding: 15px;">
-                <div style="margin-bottom: 25px; background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 4px;">
-                    <h4 style="color: #ffa500; margin: 0 0 15px 0; font-weight: 100; font-size: 16px;">➕ Добавить нового пользователя</h4>
-                    <div style="display: flex; flex-direction: column; gap: 12px;">
-                        <input type="text" 
-                               id="newUsername" 
-                               class="admins-input-field" 
-                               placeholder="Введите имя пользователя" 
-                               maxlength="20"
-                               style="padding: 10px;">
-                        <div style="display: flex; gap: 8px; align-items: center;">
-                            <input type="text" 
-                                   id="newPassword" 
-                                   class="admins-input-field" 
-                                   placeholder="Введите пароль" 
-                                   style="flex: 1; padding: 10px;">
-                            <button onclick="generatePassword()" 
-                                    class="admins-btn-small" 
-                                    type="button"
-                                    style="padding: 10px 15px; white-space: nowrap;">
-                                🎲 Сгенерировать
+            <div class="panel-content">
+                <div class="add-user-section">
+                    <h4>Добавить нового пользователя</h4>
+                    <div class="form-group">
+                        <input type="text" id="newUsername" class="admins-input-field" 
+                               placeholder="Введите имя пользователя" maxlength="20">
+                    </div>
+                    <div class="form-group">
+                        <div class="password-group">
+                            <input type="text" id="newPassword" class="admins-input-field" 
+                                   placeholder="Введите пароль или сгенерируйте">
+                            <button onclick="generatePassword()" class="admins-btn-small" type="button">
+                                Сгенерировать
                             </button>
                         </div>
-                        <button onclick="addNewUser()" 
-                                class="admins-btn admins-btn-success"
-                                style="padding: 12px; font-size: 16px;">
-                            ➕ Добавить пользователя
-                        </button>
-                        <div id="userError" style="margin-top: 10px; min-height: 20px; padding: 5px; border-radius: 3px;"></div>
                     </div>
+                    <button onclick="addNewUser()" class="admins-btn admins-btn-success">
+                        Добавить пользователя
+                    </button>
+                    <div id="userError" class="error-message"></div>
                 </div>
                 
-                <div style="background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 4px;">
-                    <h4 style="color: #ffa500; margin: 0 0 15px 0; font-weight: 100; font-size: 16px;">📋 Существующие пользователи (${document.querySelectorAll('.user-item')?.length || 0})</h4>
-                    <div id="userList" style="max-height: 400px; overflow-y: auto; margin-top: 10px; padding-right: 5px;">
-                        <p style="color: #ffa500; padding: 20px; text-align: center;">Загрузка...</p>
+                <div class="users-list-section">
+                    <h4>Существующие пользователи</h4>
+                    <div id="userList" class="users-list">
+                        <div class="users-loading">Загрузка...</div>
                     </div>
                 </div>
             </div>
@@ -441,129 +627,124 @@ function createUserManagerPanel() {
     `;
     
     const panel = document.createElement('div');
-    panel.innerHTML = userPanelHTML;
+    panel.innerHTML = panelHTML;
     document.body.appendChild(panel.firstElementChild);
     
-    // Добавляем стили
-    addUserPanelStyles();
-    addNotificationStyles();
+    // Добавляем дополнительные стили для панели
+    const panelStyle = document.createElement('style');
+    panelStyle.textContent = `
+        #userManagerPanel {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            width: 500px;
+            max-height: 80vh;
+            overflow-y: auto;
+            z-index: 10001;
+            background: rgba(0, 0, 0, 0.95);
+            border: 2px solid #ffa500;
+            border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        }
+        
+        .panel-content {
+            padding: 20px;
+        }
+        
+        .add-user-section {
+            background: rgba(255, 165, 0, 0.1);
+            padding: 20px;
+            border-radius: 6px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255, 165, 0, 0.3);
+        }
+        
+        .add-user-section h4 {
+            color: #ffa500;
+            margin: 0 0 15px 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .password-group {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .password-group input {
+            flex: 1;
+        }
+        
+        .error-message {
+            margin-top: 10px;
+            padding: 8px 12px;
+            border-radius: 4px;
+            font-size: 14px;
+            min-height: 20px;
+        }
+        
+        .users-list-section h4 {
+            color: #ffa500;
+            margin: 0 0 15px 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .users-list {
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        
+        .users-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .users-list::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 3px;
+        }
+        
+        .users-list::-webkit-scrollbar-thumb {
+            background: rgba(255, 165, 0, 0.5);
+            border-radius: 3px;
+        }
+        
+        .users-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 165, 0, 0.7);
+        }
+    `;
+    document.head.appendChild(panelStyle);
 }
 
-function addUserPanelStyles() {
-    if (!document.querySelector('#user-panel-styles')) {
-        const style = document.createElement('style');
-        style.id = 'user-panel-styles';
-        style.textContent = `
-            .user-item {
-                background: linear-gradient(135deg, rgba(255,255,255,0.05), rgba(255,165,0,0.05));
-                border: 1px solid rgba(255, 165, 0, 0.3);
-                padding: 12px;
-                margin-bottom: 12px;
-                border-radius: 6px;
-                transition: all 0.3s ease;
-            }
-            
-            .user-item:hover {
-                border-color: rgba(255, 165, 0, 0.6);
-                box-shadow: 0 2px 8px rgba(255, 165, 0, 0.2);
-            }
-            
-            .user-info {
-                display: flex;
-                justify-content: space-between;
-                align-items: center;
-                margin-bottom: 8px;
-            }
-            
-            .user-info strong {
-                color: #ffa500;
-                font-size: 18px;
-                font-weight: 600;
-            }
-            
-            .user-password {
-                color: #4CAF50;
-                font-family: 'Courier New', monospace;
-                background: rgba(0, 0, 0, 0.4);
-                padding: 4px 10px;
-                border-radius: 4px;
-                font-weight: bold;
-                letter-spacing: 1px;
-            }
-            
-            .user-stats {
-                display: flex;
-                justify-content: space-between;
-                font-size: 13px;
-                color: #aaa;
-                margin: 6px 0;
-                padding: 4px 0;
-                border-bottom: 1px solid rgba(255,255,255,0.1);
-            }
-            
-            .user-actions {
-                display: flex;
-                gap: 6px;
-                margin: 10px 0;
-            }
-            
-            .user-actions button {
-                flex: 1;
-                padding: 6px 10px;
-                font-size: 12px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 5px;
-            }
-            
-            .user-actions button span {
-                font-size: 14px;
-            }
-            
-            .user-meta {
-                font-size: 11px;
-                color: #888;
-                text-align: center;
-                padding-top: 5px;
-                border-top: 1px dashed rgba(255,255,255,0.1);
-            }
-            
-            .admins-success {
-                color: #4CAF50 !important;
-                background: rgba(76, 175, 80, 0.1) !important;
-                padding: 8px !important;
-                border-radius: 4px !important;
-                border-left: 4px solid #4CAF50 !important;
-            }
-            
-            .admins-error {
-                color: #f44336 !important;
-                background: rgba(244, 67, 54, 0.1) !important;
-                padding: 8px !important;
-                border-radius: 4px !important;
-                border-left: 4px solid #f44336 !important;
-            }
-            
-            .admins-info {
-                color: #2196F3 !important;
-                background: rgba(33, 150, 243, 0.1) !important;
-                padding: 8px !important;
-                border-radius: 4px !important;
-                border-left: 4px solid #2196F3 !important;
-            }
-        `;
-        document.head.appendChild(style);
+// ============ ОСНОВНЫЕ ФУНКЦИИ ============
+function toggleUserManager(show) {
+    if (!document.getElementById('userManagerPanel')) {
+        createUserManagerPanel();
+        addStyles();
+    }
+    
+    const panel = document.getElementById('userManagerPanel');
+    if (!panel) return;
+    
+    if (show) {
+        panel.classList.remove('admins-hidden');
+        loadUserList();
+    } else {
+        panel.classList.add('admins-hidden');
     }
 }
 
-// ============ ДОБАВЛЕНИЕ КНОПКИ УПРАВЛЕНИЯ ============
 function addUserManagerButton() {
     if (document.querySelector('#userManagerBtn')) return;
     
     const userBtn = document.createElement('button');
     userBtn.id = 'userManagerBtn';
-    userBtn.innerHTML = '👥 Управление пользователями';
+    userBtn.textContent = 'Управление пользователями';
     userBtn.className = 'admins-btn admins-btn-primary';
     userBtn.style.cssText = `
         margin-top: 10px;
@@ -574,12 +755,13 @@ function addUserManagerButton() {
         border: none;
         color: white;
         cursor: pointer;
-        transition: all 0.3s ease;
+        border-radius: 4px;
+        font-weight: 600;
     `;
     
     userBtn.onmouseover = function() {
-        this.style.transform = 'translateY(-2px)';
-        this.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.4)';
+        this.style.transform = 'translateY(-1px)';
+        this.style.boxShadow = '0 4px 12px rgba(102, 126, 234, 0.3)';
     };
     
     userBtn.onmouseout = function() {
@@ -600,40 +782,28 @@ function addUserManagerButton() {
     }
 }
 
-// ============ ОСНОВНЫЕ ФУНКЦИИ ============
-function toggleUserManager(show) {
-    const userPanel = document.getElementById('userManagerPanel');
-    if (!userPanel) {
-        createUserManagerPanel();
-        return toggleUserManager(show);
-    }
-    
-    if (show) {
-        userPanel.classList.remove('admins-hidden');
-        loadUserList();
-    } else {
-        userPanel.classList.add('admins-hidden');
-    }
-}
-
 // ============ ИНИЦИАЛИЗАЦИЯ ============
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Админ панель загружена');
     
-    // Добавляем стили уведомлений
-    addNotificationStyles();
+    // Добавляем стили
+    addStyles();
+    
+    // Проверяем наличие Supabase клиента
+    if (!supabase) {
+        console.error('Supabase клиент не инициализирован');
+        showAlert('Ошибка: Supabase клиент не загружен', 'error');
+        return;
+    }
     
     // Загружаем контент
     loadContent().catch(console.error);
     
-    // Инициализируем обработчики событий
-    initEventListeners();
-    
-    // Подписываемся на обновления в реальном времени
-    initRealtimeSubscription();
+    // Инициализируем обработчики
+    initEventHandlers();
 });
 
-function initEventListeners() {
+function initEventHandlers() {
     // Вход в админ-панель
     document.getElementById('adminLoginBtn')?.addEventListener('click', function() {
         const loginModal = document.getElementById('loginModal');
@@ -668,7 +838,7 @@ function initEventListeners() {
         }
     });
     
-    // Закрытие модального окна
+    // Закрытие модального окна по клику вне его
     document.getElementById('loginModal')?.addEventListener('click', function(e) {
         if (e.target === this) {
             this.classList.add('admins-hidden');
@@ -683,7 +853,7 @@ function handleAdminLogin() {
     const password = passwordInput.value;
     
     if (!ADMIN_PASSWORD) {
-        showNotification('Системная ошибка: пароль администратора не настроен', 'error');
+        showAlert('Ошибка: пароль администратора не настроен', 'error');
         return;
     }
     
@@ -691,7 +861,6 @@ function handleAdminLogin() {
         isAdmin = true;
         document.getElementById('loginModal')?.classList.add('admins-hidden');
         toggleEditMode(true);
-        console.log('Успешный вход в админ-панель');
         
         // Создаем панель управления пользователями
         createUserManagerPanel();
@@ -699,9 +868,9 @@ function handleAdminLogin() {
         // Добавляем кнопку управления пользователями
         addUserManagerButton();
         
-        showNotification('Админ-панель активирована', 'success');
+        showAlert('Админ-панель активирована', 'success');
     } else {
-        showNotification('Неверный пароль', 'error');
+        showAlert('Неверный пароль', 'error');
         passwordInput.focus();
         passwordInput.select();
     }
@@ -715,36 +884,16 @@ function handleLogout() {
     // Скрываем панель управления пользователями
     document.getElementById('userManagerPanel')?.classList.add('admins-hidden');
     
-    showNotification('Вы вышли из админ-панели', 'info');
-}
-
-function initRealtimeSubscription() {
-    try {
-        supabase
-            .channel('public:site_content')
-            .on('postgres_changes', 
-                { event: '*', schema: 'public', table: 'site_content' }, 
-                (payload) => {
-                    if (!isAdmin) {
-                        const newData = payload.new;
-                        const elements = document.querySelectorAll(`[data-content-key="${newData.content_key}"]`);
-                        elements.forEach(element => {
-                            element.textContent = newData.content_value;
-                        });
-                    }
-                }
-            )
-            .subscribe((status) => {
-                console.log('Realtime subscription status:', status);
-            });
-    } catch (error) {
-        console.error('Ошибка подписки на обновления:', error);
-    }
+    showAlert('Вы вышли из админ-панели', 'info');
 }
 
 // ============ ФУНКЦИИ ДЛЯ РЕДАКТИРОВАНИЯ КОНТЕНТА ============
 async function loadContent() {
     try {
+        if (!supabase) {
+            throw new Error('Supabase клиент не инициализирован');
+        }
+        
         const { data, error } = await supabase
             .from('site_content')
             .select('*');
@@ -760,13 +909,14 @@ async function loadContent() {
             });
         }
     } catch (error) {
-        handleSupabaseError('загрузки контента', error);
+        console.error('Ошибка загрузки контента:', error);
+        showAlert(`Ошибка загрузки контента: ${error.message}`, 'error');
     }
 }
 
 async function publishChanges() {
     try {
-        showNotification('Публикация изменений...', 'info');
+        showAlert('Публикация изменений...', 'info');
         
         const elements = document.querySelectorAll('[data-content-key]');
         let savedCount = 0;
@@ -788,10 +938,11 @@ async function publishChanges() {
             savedCount++;
         }
 
-        showNotification(`Успешно опубликовано ${savedCount} элементов!`, 'success');
+        showAlert(`Успешно опубликовано ${savedCount} элементов`, 'success');
         
     } catch (error) {
-        handleSupabaseError('публикации изменений', error);
+        console.error('Ошибка публикации:', error);
+        showAlert(`Ошибка публикации: ${error.message}`, 'error');
     }
 }
 
@@ -820,7 +971,7 @@ function toggleEditMode(enable) {
     }
 }
 
-// Экспортируем функции для использования в HTML
+// ============ ЭКСПОРТ ФУНКЦИЙ ============
 window.toggleUserManager = toggleUserManager;
 window.loadUserList = loadUserList;
 window.addNewUser = addNewUser;
