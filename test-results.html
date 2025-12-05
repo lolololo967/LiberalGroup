@@ -57,6 +57,12 @@
             margin-bottom: 20px;
             text-align: center;
         }
+        
+        .error {
+            color: #ff4444;
+            text-align: center;
+            margin: 20px 0;
+        }
     </style>
 </head>
 <body>
@@ -69,41 +75,50 @@
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
     <script>
         // === ВАШИ ДАННЫЕ SUPABASE ===
-        const SUPABASE_URL = 'https://ваш-id.supabase.co'; // Замените
-        const SUPABASE_KEY = 'ваш-anon-key'; // Замените
+        const SUPABASE_URL = 'https://eqkanneloooeopkhhpuc.supabase.co'; // ЗАМЕНИТЕ
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVxa2FubmVsb29vZW9wa2hocHVjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjQ5MDk1MDgsImV4cCI6MjA4MDQ4NTUwOH0.EL7ZR9iyRSPIOYudaFWDQC4z1hXzu0PPtE1McoVvGp0'; // ЗАМЕНИТЕ
         // =============================
         
         const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         
         async function loadResults() {
             try {
+                console.log('Загрузка результатов...');
+                
                 const { data: results, error } = await supabase
                     .from('test_results')
                     .select('*')
                     .eq('published', true)
                     .order('created_at', { ascending: false });
                 
-                if (error) throw error;
+                if (error) {
+                    console.error('Ошибка Supabase:', error);
+                    throw error;
+                }
+                
+                console.log('Получено результатов:', results ? results.length : 0);
                 
                 document.getElementById('stats').innerHTML = 
                     `Всего результатов: ${results ? results.length : 0}`;
                 
                 if (!results || results.length === 0) {
                     document.getElementById('results').innerHTML = 
-                        '<p style="color: red; text-align: center;">Нет опубликованных результатов</p>';
+                        '<p class="error">Нет опубликованных результатов</p>';
                     return;
                 }
                 
                 const resultsHTML = results.map(result => `
                     <div class="result-item">
                         <div>
-                            <span class="username">${result.username}</span>
+                            <span class="username">${escapeHtml(result.username)}</span>
                             <span class="date">${new Date(result.created_at).toLocaleDateString('ru-RU')}</span>
                         </div>
-                        <div class="ideology">${result.ideology}</div>
+                        <div class="ideology">${escapeHtml(result.ideology)}</div>
                         <div>
                             Равенство: ${result.equality.toFixed(1)}% | Рынки: ${result.wealth.toFixed(1)}%<br>
-                            Мир: ${result.peace.toFixed(1)}% | Нация: ${result.might.toFixed(1)}%
+                            Мир: ${result.peace.toFixed(1)}% | Нация: ${result.might.toFixed(1)}%<br>
+                            Свобода: ${result.liberty.toFixed(1)}% | Авторитет: ${result.authority.toFixed(1)}%<br>
+                            Прогресс: ${result.progress.toFixed(1)}% | Традиция: ${result.tradition.toFixed(1)}%
                         </div>
                     </div>
                 `).join('');
@@ -111,10 +126,16 @@
                 document.getElementById('results').innerHTML = resultsHTML;
                 
             } catch (error) {
-                console.error('Ошибка:', error);
+                console.error('Полная ошибка:', error);
                 document.getElementById('results').innerHTML = 
-                    '<p style="color: red;">Ошибка загрузки результатов</p>';
+                    `<p class="error">Ошибка загрузки: ${error.message}</p>`;
             }
+        }
+        
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
         }
         
         document.addEventListener('DOMContentLoaded', loadResults);
