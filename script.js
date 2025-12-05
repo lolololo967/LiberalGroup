@@ -1,4 +1,5 @@
 // Инициализация Vanta.js эффекта
+
 VANTA.NET({
     el: "#body",
     mouseControls: true,
@@ -8,11 +9,13 @@ VANTA.NET({
     minWidth: 200.00,
     scale: 1.00,
     scaleMobile: 1.00,
-    color: 0xff000a,
+    maxDistance: 20.00,
+    color: 0xa70000,
     backgroundColor: 0xe0000,
-    points: 20.00,
-    spacing: 18.00,
-    showDots: false
+    points: 12.00,
+    spacing: 20.00,
+      showDots: false
+
 });
 window.scrollTo(0, 0);
 document.addEventListener("DOMContentLoaded", () => {
@@ -38,7 +41,6 @@ function showNext() {
     } else {
         setTimeout(() => {
             navContainer.style.opacity = "1";
-            squareContainer.style.opacity = "1";
             document.querySelector('.tests-button').style.opacity = "1"; // Добавьте эту строку
             document.querySelector('.tests-button').style.pointerEvents = "all"; // И эту
         }, 200);
@@ -153,45 +155,35 @@ const modals = document.querySelectorAll('.modal');
 const header = document.querySelector('.header');
 let currentModal = null;
 
+// Обновите функцию showModal, чтобы она обрабатывала modal "Тест"
 function showModal(modalName) {
-    const testsButton = document.querySelector('.tests-button');
     
-    // Показывать кнопку "Тесты" только на главной
-    if (modalName === 'Главная') {
-        header.classList.remove('moved-down');
-        header.classList.add('centered');
-        testsButton.style.opacity = '1';
-        testsButton.style.pointerEvents = 'all';
-    } else {
-        header.classList.remove('centered');
-        header.classList.add('moved-down');
-        testsButton.style.opacity = '0';
-        testsButton.style.pointerEvents = 'none';
-        
-        // Если открываем не "Тесты", останавливаем квадратики
-        if (modalName !== 'Тесты' && activeButton && activeButton.textContent.trim() === "Тесты") {
-            stopSquares(activeButton);
-            activeButton.classList.remove('active');
-            activeButton = null;
-        }
+  // Показывать кнопку "Тесты" только на главной
+  if (modalName === 'Главная') {
+    header.classList.remove('moved-down');
+    header.classList.add('centered');
+  } else {
+    header.classList.remove('centered');
+    header.classList.add('moved-down');
+  }
+  
+  // Скрыть текущее модальное окно
+  if (currentModal) {
+    currentModal.classList.remove('active');
+  }
+  
+  // Если не "Главная" - показать соответствующее окно
+  if (modalName !== 'Главная') {
+    const modalToShow = Array.from(modals).find(modal => 
+      modal.dataset.modal === modalName
+    );
+    if (modalToShow) {
+      modalToShow.classList.add('active');
+      currentModal = modalToShow;
     }
-    // Скрыть текущее модальное окно
-    if (currentModal) {
-        currentModal.classList.remove('active');
-    }
-    
-    // Если не "Главная" - показать соответствующее окно
-    if (modalName !== 'Главная') {
-        const modalToShow = Array.from(modals).find(modal => 
-            modal.dataset.modal === modalName
-        );
-        if (modalToShow) {
-            modalToShow.classList.add('active');
-            currentModal = modalToShow;
-        }
-    } else {
-        currentModal = null;
-    }
+  } else {
+    currentModal = null;
+  }
 }
 
 // Обработчики для кнопок навигации
@@ -233,8 +225,8 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 document.addEventListener("DOMContentLoaded", () => {
   const partMap = {
-    part1: "Туториалы",
-    part2: "Репутация",
+    part1: "Конституция",
+    part2: "Конституция",
     part3: "Роли"
   };
 
@@ -320,6 +312,9 @@ part3.addEventListener('mouseenter', () => rotateTriangleTo('part3'));
   const centerX = 150;
   const centerY = 165;
 
+  let currentSeat = null;
+  let hideTimeout = null;
+
   // Функция для вычисления позиции сидения
   function getPosition(radius, angleDeg) {
     const angleRad = angleDeg * Math.PI / 180;
@@ -329,27 +324,69 @@ part3.addEventListener('mouseenter', () => rotateTriangleTo('part3'));
     };
   }
 
-function showTooltip(seat, text) {
-  const left = seat.offsetLeft + seat.offsetWidth + 10;
-  const top = seat.offsetTop + seat.offsetHeight / 2;
+  function showTooltip(seat, text) {
+    // Отменяем предыдущее скрытие
+    if (hideTimeout) {
+      clearTimeout(hideTimeout);
+      hideTimeout = null;
+    }
 
-  tooltip.style.left = left + 'px';
-  tooltip.style.top = top + 'px';
-  tooltip.style.opacity = '1';
-  tooltip.style.transform = 'translateY(-50%) translateX(10px)';
+    // Если это уже активный тултип, ничего не делаем
+    if (currentSeat === seat) return;
 
-  tooltip.innerHTML = text.replace(/\n/g, '<br>');
-}
+    // Сразу скрываем предыдущий тултип
+    if (currentSeat && currentSeat !== seat) {
+      tooltip.style.opacity = '0';
+    }
+
+    currentSeat = seat;
+
+    // Немедленно обновляем позицию и контент
+    const left = seat.offsetLeft + seat.offsetWidth + 10;
+    const top = seat.offsetTop + seat.offsetHeight / 2;
+
+    tooltip.style.left = left + 'px';
+    tooltip.style.top = top + 'px';
+    tooltip.innerHTML = text.replace(/\n/g, '<br>');
+    
+    // Мгновенно показываем без задержки
+    tooltip.style.opacity = '1';
+    tooltip.style.transform = 'translateY(-50%) translateX(10px)';
+  }
+
   // Функция скрытия тултипа
-  function hideTooltip() {
-    tooltip.style.opacity = '0';
-    tooltip.style.transform = 'translateY(-50%) translateX(0)';
+  function hideTooltip(seat) {
+    // Если скрываем не текущий тултип, игнорируем
+    if (currentSeat !== seat) return;
+
+    // Небольшая задержка для плавности при быстром перемещении
+    hideTimeout = setTimeout(() => {
+      tooltip.style.opacity = '0';
+      tooltip.style.transform = 'translateY(-50%) translateX(0)';
+      
+      // Сбрасываем currentSeat после анимации
+      setTimeout(() => {
+        if (currentSeat === seat) {
+          currentSeat = null;
+        }
+      }, 300);
+      
+      hideTimeout = null;
+    }, 50); // Минимальная задержка для плавности
+  }
+
+  // Функция для отмены скрытия (при быстром перемещении между элементами)
+  function cancelHide() {
+    if (hideTimeout) {
+      clearTimeout(hideTimeout);
+      hideTimeout = null;
+    }
   }
 
   // Здесь задаём тексты для каждого места (индексы соответствуют порядку создания)
   const seatTexts = [
     'ЛР \n Timofey',
-    'ЛР \n Timofey',
+    'ЛР \n Timofey', 
     'ЛР \n Timofey',
     'ЛР \n Krolituki',
     'ЛР \n Krolituki',
@@ -372,8 +409,11 @@ function showTooltip(seat, text) {
     seat.style.left = pos.x + 'px';
     seat.style.top = pos.y + 'px';
 
-    seat.addEventListener('mouseenter', () => showTooltip(seat, seatTexts[i] || 'Место ' + (i + 1)));
-    seat.addEventListener('mouseleave', hideTooltip);
+    seat.addEventListener('mouseenter', () => {
+      cancelHide();
+      showTooltip(seat, seatTexts[i] || 'Место ' + (i + 1));
+    });
+    seat.addEventListener('mouseleave', () => hideTooltip(seat));
 
     container.appendChild(seat);
   }
@@ -390,61 +430,20 @@ function showTooltip(seat, text) {
     seat.style.left = pos.x + 'px';
     seat.style.top = pos.y + 'px';
 
-    seat.addEventListener('mouseenter', () => showTooltip(seat, seatTexts[index] || 'Место ' + (index + 1)));
-    seat.addEventListener('mouseleave', hideTooltip);
+    seat.addEventListener('mouseenter', () => {
+      cancelHide();
+      showTooltip(seat, seatTexts[index] || 'Место ' + (index + 1));
+    });
+    seat.addEventListener('mouseleave', () => hideTooltip(seat));
 
     container.appendChild(seat);
   }
+
+  // Предварительная инициализация позиции тултипа
+  tooltip.style.opacity = '0';
+  tooltip.style.transform = 'translateY(-50%) translateX(0)';
 })();
-document.addEventListener("DOMContentLoaded", () => {
-    const testsButton = document.querySelector('.tests-button');
-    
-    // Показываем кнопку вместе с навигацией
-    function showNext() {
-        if (index < spans.length) {
-            spans[index].classList.add("visible");
-            index++;
-            setTimeout(showNext, 100);
-        } else {
-            setTimeout(() => {
-                navContainer.style.opacity = "1";
-                squareContainer.style.opacity = "1";
-                testsButton.style.opacity = "1";
-                testsButton.style.pointerEvents = "all";
-            }, 200);
-        }
-    }
-    
-    // Обработчик клика по кнопке "Тесты"
-    testsButton.addEventListener('click', () => {
-        // Останавливаем квадратики для текущей активной кнопки
-        if (activeButton) {
-            stopSquares(activeButton);
-            activeButton.classList.remove('active');
-        }
-        
-        // Показываем модальное окно
-        showModal('Тесты');
-        
-        // Скрываем кнопку "Тесты" при открытии модального окна
-        testsButton.style.opacity = '0';
-        testsButton.style.pointerEvents = 'none';
-    });
-    
-    // Модифицируем showModal для управления кнопкой
-    const originalShowModal = showModal;
-    showModal = function(modalName) {
-        originalShowModal(modalName);
-        
-        if (modalName === 'Главная') {
-            testsButton.style.opacity = '1';
-            testsButton.style.pointerEvents = 'all';
-        } else if (modalName !== 'Тесты') {
-            testsButton.style.opacity = '0';
-            testsButton.style.pointerEvents = 'none';
-        }
-    };
-});
+
 const points = document.querySelectorAll('.activity-points div');
   const fill = document.querySelector('.activity-fill');
   const tooltip = document.getElementById('activity-tooltip');
@@ -606,4 +605,47 @@ document.addEventListener('DOMContentLoaded', function() {
         initialY = currentY;
         isDragging = false;
     }
+});
+// Добавьте этот код в ваш существующий JavaScript
+
+document.addEventListener("DOMContentLoaded", () => {
+  // Находим кнопку "Тест" и modal "Тест"
+  const testButton = document.querySelector('.test-button');
+  const testModal = document.querySelector('.modal[data-modal="Политический компас"]');
+  
+  if (testButton && testModal) {
+    testButton.addEventListener('click', () => {
+      // Показываем modal "Тест"
+      showModal('Политический компас');
+    });
+  }
+});
+// Универсальный обработчик для кнопок "Назад"
+document.addEventListener("DOMContentLoaded", () => {
+  const backButtons = document.querySelectorAll(".modal-back");
+
+  backButtons.forEach(button => {
+    button.addEventListener("click", (e) => {
+      const currentModal = e.target.closest('.modal');
+      const modalName = currentModal.dataset.modal;
+      
+      // Определяем, куда ведет кнопка "Назад" для каждого modal
+      const backNavigation = {
+        "Политический компас": "Тесты",
+        "Активность": "Информация",
+        "Репутация": "Информация", 
+        "Роли": "Информация"
+        // Добавьте другие modal по необходимости
+      };
+      
+      // Если для текущего modal есть правило навигации назад
+      if (backNavigation[modalName]) {
+        showModal(backNavigation[modalName]);
+      }
+      // Если это modal роли (не основной "Роли")
+      else if (Array.from(roleButtons).some(btn => btn.dataset.role === modalName)) {
+        showModal("Роли");
+      }
+    });
+  });
 });
